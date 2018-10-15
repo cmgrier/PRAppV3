@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="flatter-0.7-sources">
+    <CLASSES />
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib/flatter-0.7-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
