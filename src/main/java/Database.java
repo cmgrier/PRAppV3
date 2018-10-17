@@ -1,9 +1,15 @@
+import javax.swing.plaf.nimbus.State;
 import java.io.*;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Set;
 
 public class Database {
     private int highestPlayerID;
     private int initialScore = 1000;
+    private int placementK = 20;
+    private int placementBonusK = 10;
 
     public Database(){
         highestPlayerID = getHighestPlayerID();
@@ -509,6 +515,127 @@ public class Database {
         highestPlayerID = ID;
     }
 
+    public ArrayList<Player> getOrderedList(int seasonID){
+        ArrayList<Player> players = new ArrayList<>();
+        try {
+            Connection connection = getDBConnection();
+            Statement stmt = connection.createStatement();
+            String str = "select * from Players where seasonID = " + seasonID + " Order By score DESC";
+            ResultSet rs = stmt.executeQuery(str);
+            while(rs.next()){
+                int ID = rs.getInt("playerID");
+                String tag = rs.getString("tag");
+                String sponsor = rs.getString("sponsor");
+                int score = rs.getInt("score");
+                int initialScore = rs.getInt("initialScore");
+                String characters = rs.getString("characters");
+                int tournamentsEntered = rs.getInt("tournamentsEntered");
+                int sID = rs.getInt("seasonID");
+                Player P = new Player(ID, tag, sponsor, score, initialScore, characters, tournamentsEntered, seasonID);
+                players.add(P);
+            }
+        } catch (SQLException sqle){
+            System.out.println("Couldn't get ordered list of players in season " + seasonID);
+            sqle.printStackTrace();
+        }
+        return players;
+    }
+
+    public ResultSet getPlayer(int playerID){
+        ResultSet rst = null;
+        try{
+            Connection connection = getDBConnection();
+            Statement stmt = connection.createStatement();
+            String str = "Select * from Players where playerID = " + playerID;
+            rst = stmt.executeQuery(str);
+            System.out.println("got player: " + playerID);
+        } catch (SQLException sqle){
+            System.out.println("Couldn't get Player: " + playerID);
+            sqle.printStackTrace();
+        }
+        return rst;
+    }
+
+    public void updateScore(int playerID, int score){
+        try {
+            Connection connection = getDBConnection();
+            Statement stmt = connection.createStatement();
+            String str = "Update Players set score = " + score + " where playerID = " + playerID;
+            stmt.executeUpdate(str);
+            System.out.println("Updated Player " + playerID + " with new score " + score);
+        } catch (SQLException sqle){
+            System.out.println("Couldn't update Player " + playerID);
+            sqle.printStackTrace();
+        }
+    }
+
+    public void updatePlayer(int PlayerID, String sponser, Integer score, Integer initialScore, String characters, Integer tournamentsEntered){
+        try {
+            Connection connection = getDBConnection();
+            Statement stmt = connection.createStatement();
+            ResultSet player = stmt.executeQuery("select * from Players where playerID = " + PlayerID);
+
+            String oldSponsor = "";
+            int oldScore = 0;
+            int oldInitialScore = 0;
+            String oldCharacters = "";
+            int oldTournamentsEntered = 0;
+
+            if(player.next()){
+                oldSponsor = player.getString("sponsor");
+                oldScore = player.getInt("score");
+                oldInitialScore = player.getInt("initialScore");
+                oldCharacters = player.getString("characters");
+                oldTournamentsEntered = player.getInt("tournamentsEntered");
+            } else{
+                return;
+            }
+            player.close();
+            String newSponsor;
+            if(sponser != null){
+                newSponsor = sponser;
+            } else {
+                newSponsor = oldSponsor;
+            }
+            int newScore;
+            if(score != null){
+                newScore = score;
+            } else {
+                newScore = oldScore;
+            }
+            int newInitialScore;
+            if(initialScore != null){
+                newInitialScore = initialScore;
+            } else {
+                newInitialScore = oldInitialScore;
+            }
+            String newCharacters;
+            if(characters != null){
+                newCharacters = characters;
+            } else {
+                newCharacters = oldCharacters;
+            }
+            int newTournamentsEntered;
+            if(tournamentsEntered != null){
+                newTournamentsEntered = tournamentsEntered;
+            } else {
+                newTournamentsEntered = oldTournamentsEntered;
+            }
+
+            String str = "Update Players set sponsor = '" + newSponsor +
+                    "', score = " + newScore +
+                    ", initialScore = " + newInitialScore +
+                    ", characters = '" + newCharacters +
+                    "', tournamentsEntered = " + newTournamentsEntered +
+                    " Where playerID = " + PlayerID;
+            stmt.executeUpdate(str);
+            stmt.close();
+        } catch (SQLException sqle){
+            System.out.println("Couldn't update Player: " + PlayerID);
+            sqle.printStackTrace();
+        }
+    }
+
     public void addNewSeason(String name, String game){
         int ID = getHighestSeasonID() + 1;
         String str = "insert into Seasons values(" + ID + ", '" + name + "', '" + game + "')";
@@ -519,6 +646,125 @@ public class Database {
             System.out.println("Added Season: " + name + " to game " + game);
         } catch (SQLException sqle){
             System.out.println("Couldn't Add Season: " + name + " to game " + game);
+        }
+    }
+
+    public void updateScores(String Method, int season){
+        HashMap<Integer, Integer> newScores = new HashMap<>();
+        try{
+            Connection connection = getDBConnection();
+            Statement stmt = connection.createStatement();
+            String str = "Select * from (Select * from Tournaments where seasonID = " + season + ") A Join Matches M on A.tournamentID = M.tournamentID Order By M.tournamentID, M.matchID";
+            ResultSet resultSet = stmt.executeQuery(str);
+            int lastTournamentID = 0;
+            while (resultSet.next()){
+                int currentTournamentID = resultSet.getInt("tournamentID");
+                if(currentTournamentID != lastTournamentID){
+                    tournamentScores(lastTournamentID, Method, newScores);
+                }
+                int matchID = resultSet.getInt("matchID");
+                int player1ID = resultSet.getInt("player1ID");
+                int player2ID = resultSet.getInt("player2ID");
+                int player1Count = resultSet.getInt("player1Count");
+                int player2Count = resultSet.getInt("player2Count");
+                System.out.println("reading match ID: " + matchID);
+                System.out.println("in tournament " + currentTournamentID);
+                Player P1;
+                if(newScores.containsKey(player1ID)){
+                    P1 = new Player(player1ID, newScores.get(player1ID));
+                } else {
+                    ResultSet player1 = getPlayer(player1ID);
+                    P1 = new Player(player1);
+                }
+                Player P2;
+                if(newScores.containsKey(player2ID)){
+                    P2 = new Player(player2ID, newScores.get(player2ID));
+                } else {
+                    ResultSet player2 = getPlayer(player2ID);
+                    P2 = new Player(player2);
+                }
+                Match match = new Match(matchID, currentTournamentID, player1ID, player2ID, player1Count, player2Count);
+                System.out.println("Created match obj");
+                P1.calculateScore(Method, P2, match);
+                System.out.println("P1 newScore = " + P1.score + " and P2 newScore = " + P2.score);
+                if(newScores.containsKey(player1ID)){
+                    newScores.replace(player1ID, P1.score);
+                } else {
+                    newScores.put(player1ID, P1.score);
+                }
+                if(newScores.containsKey(player2ID)){
+                    newScores.replace(player2ID, P2.score);
+                } else {
+                    newScores.put(player2ID, P2.score);
+                }
+                lastTournamentID = currentTournamentID;
+            }
+            tournamentScores(lastTournamentID, Method, newScores);
+            resultSet.close();
+            stmt.close();
+            connection.close();
+        } catch (SQLException sqle){
+            System.out.println("Couldn't query Database for matches and get player information");
+            sqle.printStackTrace();
+        }
+
+        Set<Integer> updatedPlayers = newScores.keySet();
+        for (Integer player:updatedPlayers) {
+            updateScore(player, newScores.get(player));
+            System.out.println("updated score for Player: " + player + " to be " + newScores.get(player));
+        }
+
+    }
+
+    public int getPlacement(int playerID, int tournamentID){
+        int placement = 0;
+        try{
+            String str = "Select * from Placings " +
+                    "where playerID = " + playerID +
+                    " and tournamentID = " + tournamentID;
+            Connection connection = getDBConnection();
+            Statement stmt = connection.createStatement();
+            ResultSet rst = stmt.executeQuery(str);
+            if(rst.next()){
+                placement = rst.getInt("placement");
+            }
+            rst.close();
+        } catch (SQLException sqle){
+            System.out.println("Couldn't get placing for player " + playerID);
+        }
+        return placement;
+    }
+
+    public void tournamentScores(int tournamentID, String method, HashMap<Integer, Integer> scores){
+        if(method.contains("Placing Bonus")){
+            Set<Integer> keys = scores.keySet();
+            int numberOfAttendees = keys.size();
+            for (Integer player:keys) {
+                int placement = getPlacement(player, tournamentID);
+                int oldScore = (int) scores.get(player);
+                double a = 2 * numberOfAttendees;
+                double b = placement / a;
+                double c = 1.5 - b;
+                double d = placementBonusK * c;
+                double newScore = oldScore + d;
+                int finalScore = (int) newScore;
+                scores.replace(player, finalScore);
+            }
+        }
+        if(method.contains("Placement")){
+            Set<Integer> keys = scores.keySet();
+            int numberOfAttendees = keys.size();
+            for (Integer player:keys) {
+                int placement = getPlacement(player, tournamentID);
+                int oldScore = (int) scores.get(player);
+                double a = numberOfAttendees;
+                double b = placement / a;
+                double c = 1 - b;
+                double d = placementK * c;
+                double newScore = oldScore + d;
+                int finalScore = (int) newScore;
+                scores.replace(player, finalScore);
+            }
         }
     }
 }
