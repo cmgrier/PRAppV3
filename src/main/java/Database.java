@@ -735,18 +735,104 @@ public class Database {
         return placement;
     }
 
+    public ArrayList<String> getSeasons(String game){
+        ArrayList<String> seasons = new ArrayList<>();
+        try {
+            String str = "Select * from Seasons where game = " + game;
+            Connection connection = getDBConnection();
+            Statement stmt = connection.createStatement();
+            ResultSet rst = stmt.executeQuery(str);
+            while (rst.next()){
+                String name = rst.getString("name");
+                seasons.add(name);
+            }
+        } catch (SQLException sqle){
+            System.out.println("Couldn't get seasons");
+            sqle.printStackTrace();
+        }
+        return seasons;
+    }
+
+    public ArrayList<String> getTournaments(int seasonID){
+        ArrayList<String> tournaments = new ArrayList<>();
+        try {
+            Connection connection = getDBConnection();
+            Statement stmt = connection.createStatement();
+            String str = "Select * from Tournaments where seasonID = " + seasonID;
+            ResultSet rst = stmt.executeQuery(str);
+            while (rst.next()){
+                String tournament = rst.getString("name");
+                tournaments.add(tournament);
+            }
+        } catch (SQLException sqle){
+            System.out.println("Couldn't get tournaments");
+            sqle.printStackTrace();
+        }
+        return tournaments;
+    }
+
+    public int averagePlayerScore(int seasonID){
+        int avgScore = 0;
+        try {
+            Connection connection = getDBConnection();
+            Statement stmt = connection.createStatement();
+            String str = "";
+            ResultSet rst;
+            if(seasonID == 0){
+                str = "Select avg(score) as average from Players";
+                rst = stmt.executeQuery(str);
+            } else {
+                str = "Select avg(score) as average from Players where seasonID = " + seasonID;
+                rst = stmt.executeQuery(str);
+            }
+            if(rst.next()){
+                avgScore = rst.getInt("average");
+            }
+        } catch (SQLException sqle){
+            System.out.println("Couldn't get average score");
+            sqle.printStackTrace();
+        }
+        return avgScore;
+    }
+
     public void tournamentScores(int tournamentID, String method, HashMap<Integer, Integer> scores){
         if(method.contains("Placing Bonus")){
             Set<Integer> keys = scores.keySet();
+            int seasonID = 0;
+            try {
+                Connection connection = getDBConnection();
+                Statement stmt = connection.createStatement();
+                String str = "Select seasonID from Tournaments where tournamentID = " + tournamentID;
+                ResultSet rst = stmt.executeQuery(str);
+                if(rst.next()){
+                    seasonID = rst.getInt("seasonID");
+                }
+            } catch (SQLException sqle){
+                System.out.println("Couldn't get seasonID");
+                sqle.printStackTrace();
+            }
+
             int numberOfAttendees = keys.size();
+            int avgScoreInTournament = 0;
+            for (Integer player:keys) {
+                avgScoreInTournament += scores.get(player);
+            }
+            if(scores.size() == 0){
+                avgScoreInTournament = 0;
+            } else{
+                avgScoreInTournament = avgScoreInTournament / scores.size();
+            }
+            int avgScoreOverall = averagePlayerScore(seasonID);
+            double e = (double) avgScoreInTournament / (double) avgScoreOverall;
             for (Integer player:keys) {
                 int placement = getPlacement(player, tournamentID);
                 int oldScore = (int) scores.get(player);
-                double a = 2 * numberOfAttendees;
-                double b = placement / a;
+                double a = 2.0 * (double) numberOfAttendees;
+                double b = (double) placement / a;
                 double c = 1.5 - b;
                 double d = placementBonusK * c;
-                double newScore = oldScore + d;
+                double f = e * d;
+                double newScore = oldScore + f;
                 int finalScore = (int) newScore;
                 scores.replace(player, finalScore);
             }
