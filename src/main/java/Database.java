@@ -52,7 +52,7 @@ public class Database {
                     "sponsor varchar(10)," +
                     "score integer," +
                     "initialScore integer," +
-                    "characters varchar(50)," +
+                    "characters varchar(50) not null," +
                     "tournamentsEntered integer," +
                     "seasonID integer," +
                     "Constraint Players_seasonID_FK Foreign Key(seasonID) references Seasons(seasonID))";
@@ -503,7 +503,7 @@ public class Database {
 
     public void addNewPlayer(String tag, int seasonID){
         int ID = getHighestPlayerID() + 1;
-        String str = "insert into Players values(" + ID + ", '" + tag + "', null, " + initialScore + ", " + initialScore + ", null, 0, " + seasonID + ")";
+        String str = "insert into Players values(" + ID + ", '" + tag + "', '', " + initialScore + ", " + initialScore + ", '', 0, " + seasonID + ")";
         try{
             Connection connection = getDBConnection();
             Statement stmt = connection.createStatement();
@@ -515,12 +515,12 @@ public class Database {
         highestPlayerID = ID;
     }
 
-    public ArrayList<Player> getOrderedList(int seasonID){
+    public ArrayList<Player> getOrderedList(int seasonID, int minTourneysEntered){
         ArrayList<Player> players = new ArrayList<>();
         try {
             Connection connection = getDBConnection();
             Statement stmt = connection.createStatement();
-            String str = "select * from Players where seasonID = " + seasonID + " Order By score DESC";
+            String str = "select * from Players where seasonID = " + seasonID + " and tournamentsEntered >= " + minTourneysEntered + " Order By score DESC";
             ResultSet rs = stmt.executeQuery(str);
             while(rs.next()){
                 int ID = rs.getInt("playerID");
@@ -554,6 +554,44 @@ public class Database {
             sqle.printStackTrace();
         }
         return rst;
+    }
+
+    public ResultSet getPlayer2(String playerTag, int seasonID){
+        ResultSet rst = null;
+        try {
+            Connection connection = getDBConnection();
+            Statement stmt = connection.createStatement();
+            String str = "Select * from Player where tag = '" + playerTag + "' and seasonID = " + seasonID;
+            rst = stmt.executeQuery(str);
+        } catch (SQLException sqle){
+            System.out.println("Couldn't get Player: " + playerTag);
+        }
+        return rst;
+    }
+
+    public ArrayList<Player> getPlayers(int seasonID){
+        ArrayList<Player> players = new ArrayList<>();
+        try {
+            Connection connection = getDBConnection();
+            Statement stmt = connection.createStatement();
+            String str = "Select * from Players where seasonID = " + seasonID;
+            ResultSet rs = stmt.executeQuery(str);
+            while (rs.next()){
+                int ID = rs.getInt("playerID");
+                String tag = rs.getString("tag");
+                String sponsor = rs.getString("sponsor");
+                int score = rs.getInt("score");
+                int initialScore = rs.getInt("initialScore");
+                String characters = rs.getString("characters");
+                int tournamentsEntered = rs.getInt("tournamentsEntered");
+                Player P = new Player(ID, tag, sponsor, score, initialScore, characters, tournamentsEntered, seasonID);
+                players.add(P);
+            }
+        } catch (SQLException sqle){
+            System.out.println("Couldn't get Players in season " + seasonID);
+            sqle.printStackTrace();
+        }
+        return players;
     }
 
     public void updateScore(int playerID, int score){
@@ -649,6 +687,18 @@ public class Database {
         }
     }
 
+    public void resetScores(int season){
+        try {
+            Connection connection = getDBConnection();
+            Statement stmt = connection.createStatement();
+            String str = "Update Players set score = initialScore where seasonID = " + season;
+            stmt.executeUpdate(str);
+            System.out.println("Reset all scores to 0 for season " + season);
+        } catch (SQLException sqle){
+            System.out.println("Couldn't reset scores for season " + season);
+        }
+    }
+
     public void updateScores(String Method, int season){
         HashMap<Integer, Integer> newScores = new HashMap<>();
         try{
@@ -660,7 +710,7 @@ public class Database {
             while (resultSet.next()){
                 int currentTournamentID = resultSet.getInt("tournamentID");
                 if(currentTournamentID != lastTournamentID){
-                    tournamentScores(lastTournamentID, Method, newScores);
+                    newScores = tournamentScores(lastTournamentID, Method, newScores);
                 }
                 int matchID = resultSet.getInt("matchID");
                 int player1ID = resultSet.getInt("player1ID");
@@ -699,7 +749,7 @@ public class Database {
                 }
                 lastTournamentID = currentTournamentID;
             }
-            tournamentScores(lastTournamentID, Method, newScores);
+            newScores = tournamentScores(lastTournamentID, Method, newScores);
             resultSet.close();
             stmt.close();
             connection.close();
@@ -735,10 +785,33 @@ public class Database {
         return placement;
     }
 
+    public ArrayList<Integer> getPlayerPlacements(int playerID){
+        ArrayList<Integer> placings = new ArrayList<>();
+        try {
+            Connection connection = getDBConnection();
+            Statement stmt = connection.createStatement();
+            String str = "Select placement from Placings where playerID = " + playerID;
+            ResultSet rst = stmt.executeQuery(str);
+            while (rst.next()){
+                int placing = rst.getInt("placement");
+                placings.add(placing);
+            }
+        } catch (SQLException sqle){
+            System.out.println("Couldn't get placings");
+            sqle.printStackTrace();
+        }
+        return placings;
+    }
+
     public ArrayList<String> getSeasons(String game){
         ArrayList<String> seasons = new ArrayList<>();
+        String str;
         try {
-            String str = "Select * from Seasons where game = " + game;
+            if(game.equals("all")){
+                str = "Select * from Seasons";
+            } else {
+                str = "Select * from Seasons Where game = '" + game + "'";
+            }
             Connection connection = getDBConnection();
             Statement stmt = connection.createStatement();
             ResultSet rst = stmt.executeQuery(str);
@@ -751,6 +824,19 @@ public class Database {
             sqle.printStackTrace();
         }
         return seasons;
+    }
+
+    public ResultSet executeQuery(String str){
+        ResultSet rst = null;
+        try {
+            Connection connection = getDBConnection();
+            Statement stmt = connection.createStatement();
+            rst = stmt.executeQuery(str);
+        } catch (SQLException sqle){
+            System.out.println("Couldn't execute Query");
+            sqle.printStackTrace();
+        }
+        return rst;
     }
 
     public ArrayList<String> getTournaments(int seasonID){
@@ -769,6 +855,42 @@ public class Database {
             sqle.printStackTrace();
         }
         return tournaments;
+    }
+
+    public int getSeasonID(String seasonName, String game){
+        int seasonID = 0;
+        try {
+            Connection connection = getDBConnection();
+            Statement stmt = connection.createStatement();
+            ResultSet rst = stmt.executeQuery("Select seasonID from Seasons where name = '" + seasonName + "' AND game = '" + game + "'");
+            if(rst.next()){
+                seasonID = rst.getInt("seasonID");
+            }
+        } catch (SQLException sqle){
+            System.out.println("Couldn't get seasonID");
+            sqle.printStackTrace();
+        }
+        return seasonID;
+    }
+
+    public ArrayList<String> getGames(){
+        ArrayList<String> games = new ArrayList<>();
+        try {
+            Connection connection = getDBConnection();
+            Statement stmt = connection.createStatement();
+            String str = "Select * from Seasons";
+            ResultSet rst = stmt.executeQuery(str);
+            while (rst.next()){
+                String game = rst.getString("game");
+                if(!games.contains(game)){
+                    games.add(game);
+                }
+            }
+        } catch (SQLException sqle){
+            System.out.println("Couldn't get Games");
+            sqle.printStackTrace();
+        }
+        return games;
     }
 
     public int averagePlayerScore(int seasonID){
@@ -795,7 +917,7 @@ public class Database {
         return avgScore;
     }
 
-    public void tournamentScores(int tournamentID, String method, HashMap<Integer, Integer> scores){
+    public HashMap<Integer, Integer> tournamentScores(int tournamentID, String method, HashMap<Integer, Integer> scores){
         if(method.contains("Placing Bonus")){
             Set<Integer> keys = scores.keySet();
             int seasonID = 0;
@@ -852,5 +974,6 @@ public class Database {
                 scores.replace(player, finalScore);
             }
         }
+        return scores;
     }
 }

@@ -48,22 +48,26 @@ public class Player {
 
     public Player(int ID, int score){
         this.playerID = ID;
-        this.tag = null;
-        this.sponsor = null;
+        this.tag = "";
+        this.sponsor = "";
         this.score = score;
         this.initialScore = 0;
-        this.characters = null;
+        this.characters = "";
         this.tournamentsEntered = 0;
         this.seasonID = 0;
     }
 
     public ArrayList<String> getCharacters(){
-        String[] characters = this.characters.split("&");
         ArrayList<String> returnList = new ArrayList<>();
-        for (String character:characters) {
-            returnList.add(character);
+        if(this.characters.equals(null)){
+            return returnList;
+        } else {
+            String[] characters = this.characters.split("&");
+            for (String character:characters) {
+                returnList.add(character);
+            }
+            return returnList;
         }
-        return returnList;
     }
 
     public void calculateScore(String Method, Player opponent, Match match){

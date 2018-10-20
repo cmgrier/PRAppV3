@@ -10,10 +10,13 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import javax.xml.crypto.Data;
 import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
 
 import static javafx.scene.paint.Color.LIGHTGREEN;
@@ -229,9 +232,11 @@ public class StartScreenController implements Initializable{
     Font BROKERENMIRING = Font.loadFont(getClass().getResourceAsStream("/Fonts/BROKEREN MIRING.ttf"), 24);
     Font SFQuartziteObliqueTitle = Font.loadFont(getClass().getResourceAsStream("/Fonts/SFQuartzite-Oblique.ttf"), 70);
 
-    String defaultGame = "Smash4";
-    String defaultSeason = "TestSeason";
+    String defaultGame = "";
+    String defaultSeason = "";
+    int minimumTE = 0;
     int K = 24;
+    String currentMethod = "Placement";
 
     @Override
     public void initialize(URL url, ResourceBundle rb){
@@ -242,8 +247,8 @@ public class StartScreenController implements Initializable{
         updateSeasonList();
         fillCharacterList();
         fillPlayerBox();
-        updateTopTen();
-        updateCharactersAndPlacings();
+        updateTopTen();//
+        //updateCharactersAndPlacings();
         updateTournamentList();
         WinLoss.setVisible(false);
         WinPercentage.setVisible(false);
@@ -282,12 +287,23 @@ public class StartScreenController implements Initializable{
                 }
                 if(lineCnt == 2){
                     defaultSeason = line;
+                    if(defaultSeason.equals("<first>")){
+                        Database DB = new Database();
+                        ArrayList<String> seasons = DB.getSeasons("all");
+                        defaultSeason = seasons.get(0);
+                    }
                 }
                 if(lineCnt == 3){
                     defaultGame = line;
+                    if(defaultGame.equals("default")){
+                        Database DB = new Database();
+                    }
                 }
                 if(lineCnt == 4){
                     K = Integer.parseInt(line);
+                }
+                if(lineCnt == 5){
+                    minimumTE = Integer.parseInt(line);
                 }
             }
             br.close();
@@ -535,11 +551,8 @@ public class StartScreenController implements Initializable{
         updateTournamentList();
     }
 
-    // Todo needs fixing for V3
     public void changeSeason(){
-        Season newSeason = getSeason(CurrentGame.getText(),ChangeSeason.getValue());
-        CurrentSeason.setText(newSeason.name);
-        updateCharactersAndPlacings();
+        CurrentSeason.setText(ChangeSeason.getValue());
         updateTopTen();
         fillPlayerBox();
         updateTournamentList();
@@ -552,27 +565,21 @@ public class StartScreenController implements Initializable{
         update();
     }
 
-    // Todo needs fixing for V3
     public void updateTournamentList(){
         TournamentList.getItems().clear();
         RemoveTournament.getItems().clear();
         Database DB = new Database();
-
-        Season s = getSeason(CurrentGame.getText(),CurrentSeason.getText());
-        TournamentList.getItems().addAll(s.tournaments);
-        RemoveTournament.getItems().addAll(s.tournaments);
+        ArrayList<String> tournaments = DB.getTournaments(DB.getSeasonID(CurrentSeason.getText(), CurrentGame.getText()));
+        TournamentList.getItems().addAll(tournaments);
+        RemoveTournament.getItems().addAll(tournaments);
     }
 
-    // Todo needs fixing for V3
     public void changeGame(){
-        if(ChangeGame.getValue() != "Change Game") {
+        if(!ChangeGame.getValue().equals("Change Game")) {
             CurrentGame.setText(ChangeGame.getValue());
-            File[] seasons = new File("Data/" + CurrentGame.getText() + "/Seasons").listFiles();
-            if (seasons.length > 0) {
-                CurrentSeason.setText(seasons[0].getName());
-            } else {
-                createSeason();
-            }
+            Database DB = new Database();
+            ArrayList<String> seasons = DB.getSeasons(CurrentGame.getText());
+            CurrentSeason.setText(seasons.get(0));
             update();
             updateTournamentList();
             updateSeasonList();
@@ -582,37 +589,33 @@ public class StartScreenController implements Initializable{
         }
     }
 
-    // Todo needs fixing for V3
+    // Todo needs to be redone for V3
     public void addGame() {
-        try {
-            Files.createDirectories(Paths.get("Data/" + GameTitle.getText() + "/Seasons"));
-            Files.createDirectories(Paths.get("Data/" + GameTitle.getText() + "/Tournaments/CSVFiles"));
-            Files.createDirectories(Paths.get("Data/" + GameTitle.getText() + "/Tournaments/JSONFiles"));
-            FileWriter fw = new FileWriter("Data/" + GameTitle.getText() + "/Seasons/EmptySeason.csv");
-            BufferedWriter bw = new BufferedWriter(fw);
-            bw.write("EmptySeason");
-            bw.close();
-            fw.close();
-            CurrentGame.setText(GameTitle.getText());
-            CurrentSeason.setText("EmptySeason.csv");
-            GameTitle.clear();
-        } catch (IOException ioe) {
-            System.out.println("Could not create Game");
-        }
-        update();
-        updateTournamentList();
-        updateSeasonList();
-        fillPlayerBox();
-        fillGameBox();
+//        try {
+//            Files.createDirectories(Paths.get("Data/" + GameTitle.getText() + "/Seasons"));
+//            Files.createDirectories(Paths.get("Data/" + GameTitle.getText() + "/Tournaments/CSVFiles"));
+//            Files.createDirectories(Paths.get("Data/" + GameTitle.getText() + "/Tournaments/JSONFiles"));
+//            FileWriter fw = new FileWriter("Data/" + GameTitle.getText() + "/Seasons/EmptySeason.csv");
+//            BufferedWriter bw = new BufferedWriter(fw);
+//            bw.write("EmptySeason");
+//            bw.close();
+//            fw.close();
+//            CurrentGame.setText(GameTitle.getText());
+//            CurrentSeason.setText("EmptySeason.csv");
+//            GameTitle.clear();
+//        } catch (IOException ioe) {
+//            System.out.println("Could not create Game");
+//        }
+//        update();
+//        updateTournamentList();
+//        updateSeasonList();
+//        fillPlayerBox();
+//        fillGameBox();
     }
 
-    // Todo needs fixing for V3
     public void fillGameBox(){
-        File[] directories = new File("Data").listFiles(File::isDirectory);
-        ArrayList<String> games = new ArrayList<>();
-        for (File f:directories) {
-            games.add(f.getName());
-        }
+        Database DB = new Database();
+        ArrayList<String> games = DB.getGames();
         Collections.sort(games);
         ChangeGame.getItems().clear();
         DefaultGameBox.getItems().clear();
@@ -620,9 +623,10 @@ public class StartScreenController implements Initializable{
         DefaultGameBox.getItems().addAll(games);
     }
 
-    // Todo needs fixing for V3
-    public void updateTopTen(){
-        ArrayList<Player> players = getSeason(CurrentGame.getText(),CurrentSeason.getText()).orderedList();
+    public void updateTagsScoresArrows(){
+        Database DB = new Database();
+        int seasonID = DB.getSeasonID(CurrentSeason.getText(), CurrentGame.getText());
+        ArrayList<Player> players = DB.getOrderedList(seasonID, minimumTE);
         clearTable();
         setPlayerName(PlayerName10, players.get(9).tag);
         updateScore(P10SCR,players.get(9).score);
@@ -657,7 +661,6 @@ public class StartScreenController implements Initializable{
         addArrow(players.get(9),P10Arrow);
     }
 
-    // Todo needs fixing for V3
     private void setPlayerName(Label label, String tag){
         label.setText(tag);
         label.setFont(SFQuartziteOblique);
@@ -670,7 +673,6 @@ public class StartScreenController implements Initializable{
         }
     }
 
-    // Todo needs fixing for V3
     private void addArrow(Player player, Pane pane){
         Polygon Arrow = new Polygon();
         Arrow.getPoints().addAll(
@@ -699,265 +701,69 @@ public class StartScreenController implements Initializable{
         pane.getChildren().add(Arrow);
     }
 
-    // Todo needs fixing for V3
-    private void updateCharactersAndPlacings(){
-        Season season = getSeason(CurrentGame.getText(),CurrentSeason.getText());
-        Player p1 = season.orderedList().get(0);
-        if(p1.tag.equals("")){
-            Characters11.setImage(null);
-            Characters12.setImage(null);
-            Characters13.setImage(null);
-            FirstP1.setText(null);
-            SecondP1.setText(null);
-            ThirdP1.setText(null);
+    private void updateEntry(Player player, ImageView character1, ImageView character2, ImageView character3, Label firstPlace, Label secondPlace, Label thirdPlace, Label WR){
+        if(player.tag.equals("")){
+            character1.setImage(null);
+            character2.setImage(null);
+            character3.setImage(null);
+            firstPlace.setText(null);
+            secondPlace.setText(null);
+            thirdPlace.setText(null);
         } else{
-            if(p1.getCharacters().size() > 1){
-                Characters12.setImage(getCharacterImage(p1.getCharacters().get(1)));
+            ArrayList<String> characters = player.getCharacters();
+            if(characters.size() > 1){
+                character2.setImage(getCharacterImage(characters.get(1)));
             } else {
-                Characters12.setImage(null);
+                character2.setImage(null);
             }
-            if(p1.getCharacters().size() > 2){
-                Characters13.setImage(getCharacterImage(p1.getCharacters().get(2)));
+            if(player.getCharacters().size() > 2){
+                character3.setImage(getCharacterImage(characters.get(2)));
             } else {
-                Characters13.setImage(null);
+                character3.setImage(null);
             }
 
-            Characters11.setImage(getCharacterImage(p1.getCharacters().get(0)));
-            // null for now
-            FirstP1.setText(null);
-            SecondP1.setText(null);
-            ThirdP1.setText(null);
+            character1.setImage(getCharacterImage(characters.get(0)));
+            Database DB = new Database();
+            ArrayList<Integer> characterPlacings = DB.getPlayerPlacements(player.playerID);
+            int firstPlaces = 0;
+            int secondPlaces = 0;
+            int thirdPlaces = 0;
+            for (Integer placing:characterPlacings) {
+                if(placing == 1){
+                    firstPlaces++;
+                } else if(placing == 2){
+                    secondPlaces++;
+                } else if(placing == 3){
+                    thirdPlaces++;
+                }
+            }
+            firstPlace.setText(String.valueOf(firstPlaces));
+            secondPlace.setText(String.valueOf(secondPlaces));
+            thirdPlace.setText(String.valueOf(thirdPlaces));
+
+            updateWinRate(player, WR);
+
         }
-        Player p2 = season.orderedList().get(1);
-        if(p2.tag.equals("")){
-            Characters21.setImage(null);
-            Characters22.setImage(null);
-            Characters23.setImage(null);
-            FirstP2.setText(null);
-            SecondP2.setText(null);
-            ThirdP2.setText(null);
-        } else{
-            Characters21.setImage(getCharacterImage(p2.getCharacters().get(0)));
-            if(p2.getCharacters().size() > 1){
-                Characters22.setImage(getCharacterImage(p2.getCharacters().get(1)));
-            } else {
-                Characters22.setImage(null);
-            }
-            if(p2.getCharacters().size() > 2){
-                Characters23.setImage(getCharacterImage(p2.getCharacters().get(2)));
-            } else {
-                Characters23.setImage(null);
-            }
-            //null for now
-            FirstP2.setText(null);
-            SecondP2.setText(null);
-            ThirdP2.setText(null);
-        }
-        Player p3 = season.orderedList().get(2);
-        if(p3.tag.equals("")){
-            Characters31.setImage(null);
-            Characters32.setImage(null);
-            Characters33.setImage(null);
-            FirstP3.setText(null);
-            SecondP3.setText(null);
-            ThirdP3.setText(null);
-        } else{
-            Characters31.setImage(getCharacterImage(p3.getCharacters().get(0)));
-            if(p3.getCharacters().size() > 1){
-                Characters32.setImage(getCharacterImage(p3.getCharacters().get(1)));
-            } else {
-                Characters32.setImage(null);
-            }
-            if(p3.getCharacters().size() > 2){
-                Characters33.setImage(getCharacterImage(p3.getCharacters().get(2)));
-            } else {
-                Characters33.setImage(null);
-            }
-            // null for now
-            FirstP3.setText(null);
-            SecondP3.setText(null);
-            ThirdP3.setText(null);
-        }
-        Player p4 = season.orderedList().get(3);
-        if(p4.tag.equals("")){
-            Characters41.setImage(null);
-            Characters42.setImage(null);
-            Characters43.setImage(null);
-            FirstP4.setText(null);
-            SecondP4.setText(null);
-            ThirdP4.setText(null);
-        } else{
-            Characters41.setImage(getCharacterImage(p4.getCharacters().get(0)));
-            if(p4.getCharacters().size() > 1){
-                Characters42.setImage(getCharacterImage(p4.getCharacters().get(1)));
-            } else {
-                Characters42.setImage(null);
-            }
-            if(p4.getCharacters().size() > 2){
-                Characters43.setImage(getCharacterImage(p4.getCharacters().get(2)));
-            } else {
-                Characters43.setImage(null);
-            }
-            //null for now
-            FirstP4.setText(null);
-            SecondP4.setText(null);
-            ThirdP4.setText(null);
-        }
-        Player p5 = season.orderedList().get(4);
-        if(p5.tag.equals("")){
-            Characters51.setImage(null);
-            Characters52.setImage(null);
-            Characters53.setImage(null);
-            FirstP5.setText(null);
-            SecondP5.setText(null);
-            ThirdP5.setText(null);
-        } else{
-            Characters51.setImage(getCharacterImage(p5.getCharacters().get(0)));
-            if(p5.getCharacters().size() > 1){
-                Characters52.setImage(getCharacterImage(p5.getCharacters().get(1)));
-            } else {
-                Characters52.setImage(null);
-            }
-            if(p5.getCharacters().size() > 2){
-                Characters53.setImage(getCharacterImage(p5.getCharacters().get(2)));
-            } else {
-                Characters53.setImage(null);
-            }
-            //null for now
-            FirstP5.setText(null);
-            SecondP5.setText(null);
-            ThirdP5.setText(null);
-        }
-        Player p6 = season.orderedList().get(5);
-        if(p6.tag.equals("")){
-            Characters61.setImage(null);
-            Characters62.setImage(null);
-            Characters63.setImage(null);
-            FirstP6.setText(null);
-            SecondP6.setText(null);
-            ThirdP6.setText(null);
-        } else{
-            Characters61.setImage(getCharacterImage(p6.getCharacters().get(0)));
-            if(p6.getCharacters().size() > 1){
-                Characters62.setImage(getCharacterImage(p6.getCharacters().get(1)));
-            } else {
-                Characters62.setImage(null);
-            }
-            if(p6.getCharacters().size() > 2){
-                Characters63.setImage(getCharacterImage(p6.getCharacters().get(2)));
-            } else {
-                Characters63.setImage(null);
-            }
-            //null for now
-            FirstP6.setText(null);
-            SecondP6.setText(null);
-            ThirdP6.setText(null);
-        }
-        Player p7 = season.orderedList().get(6);
-        if(p7.tag.equals("")){
-            Characters71.setImage(null);
-            Characters72.setImage(null);
-            Characters73.setImage(null);
-            FirstP7.setText(null);
-            SecondP7.setText(null);
-            ThirdP7.setText(null);
-        } else{
-            Characters71.setImage(getCharacterImage(p7.getCharacters().get(0)));
-            if(p7.getCharacters().size() > 1){
-                Characters72.setImage(getCharacterImage(p7.getCharacters().get(1)));
-            } else {
-                Characters72.setImage(null);
-            }
-            if(p7.getCharacters().size() > 2){
-                Characters73.setImage(getCharacterImage(p7.getCharacters().get(2)));
-            } else {
-                Characters73.setImage(null);
-            }
-            //null for now
-            FirstP7.setText(null);
-            SecondP7.setText(null);
-            ThirdP7.setText(null);
-        }
-        Player p8 = season.orderedList().get(7);
-        if(p8.tag.equals("")){
-            Characters81.setImage(null);
-            Characters82.setImage(null);
-            Characters83.setImage(null);
-            FirstP8.setText(null);
-            SecondP8.setText(null);
-            ThirdP8.setText(null);
-        } else{
-            Characters81.setImage(getCharacterImage(p8.getCharacters().get(0)));
-            if(p8.getCharacters().size() > 1){
-                Characters82.setImage(getCharacterImage(p8.getCharacters().get(1)));
-            } else {
-                Characters82.setImage(null);
-            }
-            if(p8.getCharacters().size() > 2){
-                Characters83.setImage(getCharacterImage(p8.getCharacters().get(2)));
-            } else {
-                Characters83.setImage(null);
-            }
-            // null for now
-            FirstP8.setText(null);
-            SecondP8.setText(null);
-            ThirdP8.setText(null);
-        }
-        Player p9 = season.orderedList().get(8);
-        if(p9.tag.equals("")){
-            Characters91.setImage(null);
-            Characters92.setImage(null);
-            Characters93.setImage(null);
-            FirstP9.setText(null);
-            SecondP9.setText(null);
-            ThirdP9.setText(null);
-        } else{
-            Characters91.setImage(getCharacterImage(p9.getCharacters().get(0)));
-            if(p9.getCharacters().size() > 1){
-                Characters92.setImage(getCharacterImage(p9.getCharacters().get(1)));
-            } else {
-                Characters92.setImage(null);
-            }
-            if(p9.getCharacters().size() > 2){
-                Characters93.setImage(getCharacterImage(p9.getCharacters().get(2)));
-            } else {
-                Characters93.setImage(null);
-            }
-            //null for now
-            FirstP9.setText(null);
-            SecondP9.setText(null);
-            ThirdP9.setText(null);
-        }
-        Player p10 = season.orderedList().get(9);
-        if(p10.tag.equals("")){
-            Characters101.setImage(null);
-            Characters102.setImage(null);
-            Characters103.setImage(null);
-            FirstP10.setText(null);
-            SecondP10.setText(null);
-            ThirdP10.setText(null);
-        } else{
-            Characters101.setImage(getCharacterImage(p10.getCharacters().get(0)));
-            if(p10.getCharacters().size() > 1){
-                Characters102.setImage(getCharacterImage(p10.getCharacters().get(1)));
-            } else {
-                Characters102.setImage(null);
-            }
-            if(p10.getCharacters().size() > 2){
-                Characters103.setImage(getCharacterImage(p10.getCharacters().get(2)));
-            } else {
-                Characters103.setImage(null);
-            }
-            //null for now
-            FirstP10.setText(null);
-            SecondP10.setText(null);
-            ThirdP10.setText(null);
-        }
-        updatePlacings();
-        updateWinRates();
     }
 
-    // Todo needs fixing for V3
+    private void updateTopTen(){
+        Database DB = new Database();
+        int seasonID = DB.getSeasonID(CurrentSeason.getText(), CurrentGame.getText());
+        updateTagsScoresArrows();
+        ArrayList<Player> players = DB.getOrderedList(seasonID, minimumTE);
+        updateEntry(players.get(0), Characters11, Characters12, Characters13, FirstP1, SecondP1, ThirdP1, P1WR);
+        updateEntry(players.get(1), Characters21, Characters22, Characters23, FirstP2, SecondP2, ThirdP2, P2WR);
+        updateEntry(players.get(2), Characters31, Characters32, Characters33, FirstP3, SecondP3, ThirdP3, P3WR);
+        updateEntry(players.get(3), Characters41, Characters42, Characters43, FirstP4, SecondP4, ThirdP4, P4WR);
+        updateEntry(players.get(4), Characters51, Characters52, Characters53, FirstP5, SecondP5, ThirdP5, P5WR);
+        updateEntry(players.get(5), Characters61, Characters62, Characters63, FirstP6, SecondP6, ThirdP6, P6WR);
+        updateEntry(players.get(6), Characters71, Characters72, Characters73, FirstP7, SecondP7, ThirdP7, P7WR);
+        updateEntry(players.get(7), Characters81, Characters82, Characters83, FirstP8, SecondP8, ThirdP8, P8WR);
+        updateEntry(players.get(8), Characters91, Characters92, Characters93, FirstP9, SecondP9, ThirdP9, P9WR);
+        updateEntry(players.get(9), Characters101, Characters102, Characters103, FirstP10, SecondP10, ThirdP10, P10WR);
+    }
+
+    // Todo need to add new characters recently released
     private Image getCharacterImage(String character){
         Image returnImage = Random;
         if(character.equals("Bayonetta")){
@@ -1444,172 +1250,178 @@ public class StartScreenController implements Initializable{
         PlayerName10.setText("");
     }
 
-    // Todo needs fixing for V3
-    public Season getSeason(String game, String seasonTitle){
-        Season s = new Season("Could Not Find Season");
-        try {
-            FileReader fr = new FileReader("Data/" + game + "/Seasons/" + seasonTitle);
-            BufferedReader br = new BufferedReader(fr);
-            String line;
-            int lineCnt = 0;
-            ArrayList<String> tournamentList = new ArrayList<>();
-            ArrayList<Player> players = new ArrayList<>();
-            while((line = br.readLine()) != null){
-                lineCnt++;
-                if(lineCnt == 2){
-                    String[] tourneyList = line.split(",");
-                    for (String tournament:tourneyList) {
-                        tournamentList.add(tournament);
-                    }
-                } else if(lineCnt > 2){
-                    String[] thePlayer = line.split(",");
-                    String[] theCharacters = thePlayer[2].split(":");
-                    ArrayList<String> characters = new ArrayList<>();
-                    for (String character:theCharacters) {
-                        characters.add(character);
-                    }
-                    Player p = new Player(thePlayer[0],Double.parseDouble(thePlayer[1]),characters,Double.parseDouble(thePlayer[3]));
-                    players.add(p);
-                }
-            }
-            s = new Season(seasonTitle,tournamentList,players);
-        }catch (IOException ioe){
-            System.out.println("Could not read Season");
-        }
-        return s;
-    }
+//    // Todo needs fixing for V3
+//    public Season getSeason(String game, String seasonTitle){
+//        Season s = new Season("Could Not Find Season");
+//        try {
+//            FileReader fr = new FileReader("Data/" + game + "/Seasons/" + seasonTitle);
+//            BufferedReader br = new BufferedReader(fr);
+//            String line;
+//            int lineCnt = 0;
+//            ArrayList<String> tournamentList = new ArrayList<>();
+//            ArrayList<Player> players = new ArrayList<>();
+//            while((line = br.readLine()) != null){
+//                lineCnt++;
+//                if(lineCnt == 2){
+//                    String[] tourneyList = line.split(",");
+//                    for (String tournament:tourneyList) {
+//                        tournamentList.add(tournament);
+//                    }
+//                } else if(lineCnt > 2){
+//                    String[] thePlayer = line.split(",");
+//                    String[] theCharacters = thePlayer[2].split(":");
+//                    ArrayList<String> characters = new ArrayList<>();
+//                    for (String character:theCharacters) {
+//                        characters.add(character);
+//                    }
+//                    Player p = new Player(thePlayer[0],Double.parseDouble(thePlayer[1]),characters,Double.parseDouble(thePlayer[3]));
+//                    players.add(p);
+//                }
+//            }
+//            s = new Season(seasonTitle,tournamentList,players);
+//        }catch (IOException ioe){
+//            System.out.println("Could not read Season");
+//        }
+//        return s;
+//    }
 
     // Todo needs fixing for V3
     public void addTournament(){
         String game = CurrentGame.getText();
         String seasonTitle = CurrentSeason.getText();
+        Database DB = new Database();
+        int seasonID = DB.getSeasonID(CurrentSeason.getText(), CurrentGame.getText());
+        ArrayList<String> tournaments = DB.getTournaments(seasonID);
         try {
             JSONObject tourney = (JSONObject) new JSONParser().parse(TournamentText.getText());
             JSONObject tournament = (JSONObject) tourney.get("tournament");
             String tournamentName = (String) tournament.get("name");
-            Season s = getSeason(game,seasonTitle);
 
-            if(!TournamentText.getText().isEmpty() && !s.tournaments.contains(tournamentName)){
-                s.addTournament(TournamentText.getText(), game, K);
-                s.writeSeason(game);
+
+            if(!TournamentText.getText().isEmpty() && !tournaments.contains(tournamentName)){
+                TournamentReader TR = new TournamentReader(TournamentText.getText());
+                TR.addTournament(seasonID);
+                DB.resetScores(seasonID);
+                DB.updateScores(currentMethod,seasonID);
             }
 
         }catch (ParseException pe){}
         updateTopTen();
-        updateCharactersAndPlacings();
         updateTournamentList();
         fillPlayerBox();
         TournamentText.clear();
     }
 
-    // Todo needs fixing for V3
+    // Todo needs to be redone for V3
     public void removeTournament(){
-        Season s = getSeason(CurrentGame.getText(),CurrentSeason.getText());
-        if(RemoveTournament.getValue() != null){
-            s.tournaments.remove(RemoveTournament.getValue());
-            s.writeSeason(CurrentGame.getText());
-        }
-        updateTournamentList();
+//        Season s = getSeason(CurrentGame.getText(),CurrentSeason.getText());
+//        if(RemoveTournament.getValue() != null){
+//            s.tournaments.remove(RemoveTournament.getValue());
+//            s.writeSeason(CurrentGame.getText());
+//        }
+//        updateTournamentList();
     }
 
-    // Todo needs fixing for V3
+    // Todo needs to be redone for V3
     public void alterPlayer(){
-        Season s = getSeason(CurrentGame.getText(),CurrentSeason.getText());
-        for (Player p:s.players) {
-            if(p.tag.equals(SelectPlayer.getValue())){
-                ArrayList<String> newCharacterList = new ArrayList<>();
-                if((FirstCharacter.getValue() != null) || (!FirstCharacter.getValue().equals("<Clear>"))){
-                    newCharacterList.add(FirstCharacter.getValue());
-                    System.out.println(FirstCharacter.getValue());
-                }
-                if(((SecondCharacter.getValue() != null) || (!FirstCharacter.getValue().equals("<Clear>"))) && (!FirstCharacter.getValue().equals(SecondCharacter.getValue()))){
-                    newCharacterList.add(SecondCharacter.getValue());
-                    System.out.println(SecondCharacter.getValue());
-                }
-                if(((ThirdCharacter.getValue() != null) || (!FirstCharacter.getValue().equals("<Clear>"))) && (!SecondCharacter.getValue().equals(ThirdCharacter.getValue())) && (!FirstCharacter.getValue().equals(ThirdCharacter.getValue()))){
-                    newCharacterList.add(ThirdCharacter.getValue());
-                    System.out.println(ThirdCharacter.getValue());
-                }
-                newCharacterList.remove("<Clear>");
-                newCharacterList.remove(null);
-                newCharacterList.remove("First Character");
-                newCharacterList.remove("Second Character");
-                newCharacterList.remove("Third Character");
-                p.setCharacters(newCharacterList);
-                if(PlayerScore.getText() != null){
-                    p.setScore(Double.parseDouble(PlayerScore.getText()));
-                }
-                if(InitialScore.getText() != null){
-                    p.setInitialScore(Double.parseDouble(InitialScore.getText()));
-                }
-            }
-        }
-        s.writeSeason(CurrentGame.getText());
-        updateCharactersAndPlacings();
-        updateTopTen();
-        fillCharacterList();
+//        Season s = getSeason(CurrentGame.getText(),CurrentSeason.getText());
+//        for (Player p:s.players) {
+//            if(p.tag.equals(SelectPlayer.getValue())){
+//                ArrayList<String> newCharacterList = new ArrayList<>();
+//                if((FirstCharacter.getValue() != null) || (!FirstCharacter.getValue().equals("<Clear>"))){
+//                    newCharacterList.add(FirstCharacter.getValue());
+//                    System.out.println(FirstCharacter.getValue());
+//                }
+//                if(((SecondCharacter.getValue() != null) || (!FirstCharacter.getValue().equals("<Clear>"))) && (!FirstCharacter.getValue().equals(SecondCharacter.getValue()))){
+//                    newCharacterList.add(SecondCharacter.getValue());
+//                    System.out.println(SecondCharacter.getValue());
+//                }
+//                if(((ThirdCharacter.getValue() != null) || (!FirstCharacter.getValue().equals("<Clear>"))) && (!SecondCharacter.getValue().equals(ThirdCharacter.getValue())) && (!FirstCharacter.getValue().equals(ThirdCharacter.getValue()))){
+//                    newCharacterList.add(ThirdCharacter.getValue());
+//                    System.out.println(ThirdCharacter.getValue());
+//                }
+//                newCharacterList.remove("<Clear>");
+//                newCharacterList.remove(null);
+//                newCharacterList.remove("First Character");
+//                newCharacterList.remove("Second Character");
+//                newCharacterList.remove("Third Character");
+//                p.setCharacters(newCharacterList);
+//                if(PlayerScore.getText() != null){
+//                    p.setScore(Double.parseDouble(PlayerScore.getText()));
+//                }
+//                if(InitialScore.getText() != null){
+//                    p.setInitialScore(Double.parseDouble(InitialScore.getText()));
+//                }
+//            }
+//        }
+//        s.writeSeason(CurrentGame.getText());
+//        updateCharactersAndPlacings();
+//        updateTopTen();
+//        fillCharacterList();
     }
 
-    // Todo needs fixing for V3
+    // Todo needs to be redone for V3
     public void addPlayer(){
-        Season s = getSeason(CurrentGame.getText(),CurrentSeason.getText());
-        ArrayList<String> newCharacterList = new ArrayList<>();
-        if(FirstCharacter.getValue() != null){
-            newCharacterList.add(FirstCharacter.getValue());
-        }
-        if((SecondCharacter.getValue() != null) && (!FirstCharacter.getValue().equals(SecondCharacter.getValue()))){
-            newCharacterList.add(SecondCharacter.getValue());
-        }
-        if((ThirdCharacter.getValue() != null) && (!SecondCharacter.getValue().equals(ThirdCharacter.getValue())) && (!FirstCharacter.getValue().equals(ThirdCharacter.getValue()))){
-            newCharacterList.add(ThirdCharacter.getValue());
-        }
-        Player newPlayer;
-        if(InitialScore.getText() != null){
-            newPlayer = new Player(NewPlayerTag.getText(), Double.parseDouble(InitialScore.getText()), newCharacterList);
-        } else {
-            newPlayer = new Player(NewPlayerTag.getText(), 1600);
-        }
-        s.players.add(newPlayer);
-        s.writeSeason(CurrentGame.getText());
-        updateCharactersAndPlacings();
-        updateTopTen();
-        fillCharacterList();
+//        Season s = getSeason(CurrentGame.getText(),CurrentSeason.getText());
+//        ArrayList<String> newCharacterList = new ArrayList<>();
+//        if(FirstCharacter.getValue() != null){
+//            newCharacterList.add(FirstCharacter.getValue());
+//        }
+//        if((SecondCharacter.getValue() != null) && (!FirstCharacter.getValue().equals(SecondCharacter.getValue()))){
+//            newCharacterList.add(SecondCharacter.getValue());
+//        }
+//        if((ThirdCharacter.getValue() != null) && (!SecondCharacter.getValue().equals(ThirdCharacter.getValue())) && (!FirstCharacter.getValue().equals(ThirdCharacter.getValue()))){
+//            newCharacterList.add(ThirdCharacter.getValue());
+//        }
+//        Player newPlayer;
+//        if(InitialScore.getText() != null){
+//            newPlayer = new Player(NewPlayerTag.getText(), Double.parseDouble(InitialScore.getText()), newCharacterList);
+//        } else {
+//            newPlayer = new Player(NewPlayerTag.getText(), 1600);
+//        }
+//        s.players.add(newPlayer);
+//        s.writeSeason(CurrentGame.getText());
+//        updateCharactersAndPlacings();
+//        updateTopTen();
+//        fillCharacterList();
     }
 
-    // Todo needs fixing for V3
     public void fillPlayerBox(){
         SelectPlayer.getItems().clear();
         BasePlayer.getItems().clear();
         MergePlayer.getItems().clear();
         SelectPlayerStatistics.getItems().clear();
-        Season s = getSeason(CurrentGame.getText(),CurrentSeason.getText());
-        ArrayList<String> players = new ArrayList<>();
-        for (Player p:s.players) {
-            players.add(p.tag);
+        Database DB = new Database();
+        int seasonID = DB.getSeasonID(CurrentSeason.getText(), CurrentGame.getText());
+        ArrayList<Player> players = DB.getPlayers(seasonID);
+        ArrayList<String> playerTags = new ArrayList<>();
+        for (Player p:players) {
+            playerTags.add(p.tag);
         }
-        Collections.sort(players);
-        SelectPlayer.getItems().addAll(players);
-        BasePlayer.getItems().addAll(players);
-        MergePlayer.getItems().addAll(players);
-        SelectPlayerStatistics.getItems().addAll(players);
+        Collections.sort(playerTags);
+        SelectPlayer.getItems().addAll(playerTags);
+        BasePlayer.getItems().addAll(playerTags);
+        MergePlayer.getItems().addAll(playerTags);
+        SelectPlayerStatistics.getItems().addAll(playerTags);
     }
 
-    // Todo needs fixing for V3
     public void fillCharacterBoxes(){
-        Season s = getSeason(CurrentGame.getText(),CurrentSeason.getText());
-        for (Player p:s.players) {
-            if(p.getTag().equals(SelectPlayer.getValue())){
+        Database DB = new Database();
+        int seasonID = DB.getSeasonID(CurrentSeason.getText(), CurrentGame.getText());
+        ArrayList<Player> players = DB.getPlayers(seasonID);
+        for (Player p:players) {
+            if(p.tag.equals(SelectPlayer.getValue())){
                 FirstCharacter.setValue("First Character");
                 SecondCharacter.setValue("Second Character");
                 ThirdCharacter.setValue("Third Character");
                 if((p.getCharacters().size() > 0) && (!p.getCharacters().get(0).equals(""))){
-                    FirstCharacter.setValue(p.characters.get(0));
+                    FirstCharacter.setValue(p.getCharacters().get(0));
                 }
                 if(p.getCharacters().size() > 1){
-                    SecondCharacter.setValue(p.characters.get(1));
+                    SecondCharacter.setValue(p.getCharacters().get(1));
                 }
                 if(p.getCharacters().size() > 2){
-                    ThirdCharacter.setValue(p.characters.get(2));
+                    ThirdCharacter.setValue(p.getCharacters().get(2));
                 }
                 PlayerScore.setText(String.valueOf(p.score));
                 InitialScore.setText(String.valueOf(p.initialScore));
@@ -1684,179 +1496,181 @@ public class StartScreenController implements Initializable{
         }catch (IOException ioe){}
     }
 
-    // Todo needs fixing for V3
     public void recalculateSeason(){
-        Season s = getSeason(CurrentGame.getText(), CurrentSeason.getText());
-        s.recalculateSeason(CurrentGame.getText(), K);
-        updateCharactersAndPlacings();
+        Database DB = new Database();
+        int seasonID = DB.getSeasonID(CurrentSeason.getText(), CurrentGame.getText());
+        DB.resetScores(seasonID);
+        DB.updateScores(currentMethod, seasonID);
         updateTopTen();
     }
 
-    // Todo needs fixing for V3
-    public void updatePlacings(){
-        Season s = getSeason(CurrentGame.getText(),CurrentSeason.getText());
+//    // Todo needs fixing for V3
+//    public void updatePlacings(){
+//        Season s = getSeason(CurrentGame.getText(),CurrentSeason.getText());
+//
+//        String P1 = PlayerName1.getText();
+//        Integer[] p1Placings = getPlayerPlacings(s,P1);
+//        if(p1Placings[0] != 0){
+//            FirstP1.setText(String.valueOf(p1Placings[0]));
+//        }
+//        if(p1Placings[1] != 0){
+//            SecondP1.setText(String.valueOf(p1Placings[1]));
+//        }
+//        if(p1Placings[2] != 0){
+//            ThirdP1.setText(String.valueOf(p1Placings[2]));
+//        }
+//
+//        String P2 = PlayerName2.getText();
+//        Integer[] p2Placings = getPlayerPlacings(s,P2);
+//        if(p2Placings[0] != 0){
+//            FirstP2.setText(String.valueOf(p2Placings[0]));
+//        }
+//        if(p2Placings[1] != 0){
+//            SecondP2.setText(String.valueOf(p2Placings[1]));
+//        }
+//        if(p2Placings[2] != 0){
+//            ThirdP2.setText(String.valueOf(p2Placings[2]));
+//        }
+//
+//        String P3 = PlayerName3.getText();
+//        Integer[] p3Placings = getPlayerPlacings(s,P3);
+//        if(p3Placings[0] != 0){
+//            FirstP3.setText(String.valueOf(p3Placings[0]));
+//        }
+//        if(p3Placings[1] != 0){
+//            SecondP3.setText(String.valueOf(p3Placings[1]));
+//        }
+//        if(p3Placings[2] != 0){
+//            ThirdP3.setText(String.valueOf(p3Placings[2]));
+//        }
+//
+//        String P4 = PlayerName4.getText();
+//        Integer[] p4Placings = getPlayerPlacings(s,P4);
+//        if(p4Placings[0] != 0){
+//            FirstP4.setText(String.valueOf(p4Placings[0]));
+//        }
+//        if(p4Placings[1] != 0){
+//            SecondP4.setText(String.valueOf(p4Placings[1]));
+//        }
+//        if(p4Placings[2] != 0){
+//            ThirdP4.setText(String.valueOf(p4Placings[2]));
+//        }
+//
+//        String P5 = PlayerName5.getText();
+//        Integer[] p5Placings = getPlayerPlacings(s,P5);
+//        if(p5Placings[0] != 0){
+//            FirstP5.setText(String.valueOf(p5Placings[0]));
+//        }
+//        if(p5Placings[1] != 0){
+//            SecondP5.setText(String.valueOf(p5Placings[1]));
+//        }
+//        if(p5Placings[2] != 0){
+//            ThirdP5.setText(String.valueOf(p5Placings[2]));
+//        }
+//
+//        String P6 = PlayerName6.getText();
+//        Integer[] p6Placings = getPlayerPlacings(s,P6);
+//        if(p6Placings[0] != 0){
+//            FirstP6.setText(String.valueOf(p6Placings[0]));
+//        }
+//        if(p6Placings[1] != 0){
+//            SecondP6.setText(String.valueOf(p6Placings[1]));
+//        }
+//        if(p6Placings[2] != 0){
+//            ThirdP6.setText(String.valueOf(p6Placings[2]));
+//        }
+//
+//        String P7 = PlayerName7.getText();
+//        Integer[] p7Placings = getPlayerPlacings(s,P7);
+//        if(p7Placings[0] != 0){
+//            FirstP7.setText(String.valueOf(p7Placings[0]));
+//        }
+//        if(p7Placings[1] != 0){
+//            SecondP7.setText(String.valueOf(p7Placings[1]));
+//        }
+//        if(p7Placings[2] != 0){
+//            ThirdP7.setText(String.valueOf(p7Placings[2]));
+//        }
+//
+//        String P8 = PlayerName8.getText();
+//        Integer[] p8Placings = getPlayerPlacings(s,P8);
+//        if(p8Placings[0] != 0){
+//            FirstP8.setText(String.valueOf(p8Placings[0]));
+//        }
+//        if(p8Placings[1] != 0){
+//            SecondP8.setText(String.valueOf(p8Placings[1]));
+//        }
+//        if(p8Placings[2] != 0){
+//            ThirdP8.setText(String.valueOf(p8Placings[2]));
+//        }
+//
+//        String P9 = PlayerName9.getText();
+//        Integer[] p9Placings = getPlayerPlacings(s,P9);
+//        if(p9Placings[0] != 0){
+//            FirstP9.setText(String.valueOf(p9Placings[0]));
+//        }
+//        if(p9Placings[1] != 0){
+//            SecondP9.setText(String.valueOf(p9Placings[1]));
+//        }
+//        if(p9Placings[2] != 0){
+//            ThirdP9.setText(String.valueOf(p9Placings[2]));
+//        }
+//
+//        String P10 = PlayerName10.getText();
+//        Integer[] p10Placings = getPlayerPlacings(s,P10);
+//        if(p10Placings[0] != 0){
+//            FirstP10.setText(String.valueOf(p10Placings[0]));
+//        }
+//        if(p10Placings[1] != 0){
+//            SecondP10.setText(String.valueOf(p10Placings[1]));
+//        }
+//        if(p10Placings[2] != 0){
+//            ThirdP10.setText(String.valueOf(p10Placings[2]));
+//        }
+//    }
 
-        String P1 = PlayerName1.getText();
-        Integer[] p1Placings = getPlayerPlacings(s,P1);
-        if(p1Placings[0] != 0){
-            FirstP1.setText(String.valueOf(p1Placings[0]));
-        }
-        if(p1Placings[1] != 0){
-            SecondP1.setText(String.valueOf(p1Placings[1]));
-        }
-        if(p1Placings[2] != 0){
-            ThirdP1.setText(String.valueOf(p1Placings[2]));
-        }
+//    // Todo needs fixing for V3
+//    private Integer[] getPlayerPlacings(Season s, String playerTag){
+//        Integer[] placings = new Integer[3];
+//        placings[0] = 0;
+//        placings[1] = 0;
+//        placings[2] = 0;
+//        for (String tournament:s.tournaments) {
+//            try {
+//                String fileLocation = "Data/" + CurrentGame.getText() + "/Tournaments/CSVFiles/" + tournament + ".csv";
+//                FileReader fr = new FileReader(fileLocation);
+//                BufferedReader br = new BufferedReader(fr);
+//                int lineCnt = 0;
+//                String line = "";
+//                while((line = br.readLine()) != null){
+//                    lineCnt++;
+//                    if(lineCnt == 2){
+//                        String[] top3 = line.split(",");
+//                        if(playerTag.equals(top3[0])){
+//                            placings[0] = placings[0] + 1;
+//                        }
+//                        if(playerTag.equals(top3[1])){
+//                            placings[1] = placings[1] + 1;
+//                        }
+//                        if(playerTag.equals(top3[2])){
+//                            placings[2] = placings[2] + 1;
+//                        }
+//                    }
+//                }
+//            }catch (IOException ioe){
+//                System.out.println("Could not read Tournament");
+//            }
+//        }
+//        return placings;
+//    }
 
-        String P2 = PlayerName2.getText();
-        Integer[] p2Placings = getPlayerPlacings(s,P2);
-        if(p2Placings[0] != 0){
-            FirstP2.setText(String.valueOf(p2Placings[0]));
-        }
-        if(p2Placings[1] != 0){
-            SecondP2.setText(String.valueOf(p2Placings[1]));
-        }
-        if(p2Placings[2] != 0){
-            ThirdP2.setText(String.valueOf(p2Placings[2]));
-        }
-
-        String P3 = PlayerName3.getText();
-        Integer[] p3Placings = getPlayerPlacings(s,P3);
-        if(p3Placings[0] != 0){
-            FirstP3.setText(String.valueOf(p3Placings[0]));
-        }
-        if(p3Placings[1] != 0){
-            SecondP3.setText(String.valueOf(p3Placings[1]));
-        }
-        if(p3Placings[2] != 0){
-            ThirdP3.setText(String.valueOf(p3Placings[2]));
-        }
-
-        String P4 = PlayerName4.getText();
-        Integer[] p4Placings = getPlayerPlacings(s,P4);
-        if(p4Placings[0] != 0){
-            FirstP4.setText(String.valueOf(p4Placings[0]));
-        }
-        if(p4Placings[1] != 0){
-            SecondP4.setText(String.valueOf(p4Placings[1]));
-        }
-        if(p4Placings[2] != 0){
-            ThirdP4.setText(String.valueOf(p4Placings[2]));
-        }
-
-        String P5 = PlayerName5.getText();
-        Integer[] p5Placings = getPlayerPlacings(s,P5);
-        if(p5Placings[0] != 0){
-            FirstP5.setText(String.valueOf(p5Placings[0]));
-        }
-        if(p5Placings[1] != 0){
-            SecondP5.setText(String.valueOf(p5Placings[1]));
-        }
-        if(p5Placings[2] != 0){
-            ThirdP5.setText(String.valueOf(p5Placings[2]));
-        }
-
-        String P6 = PlayerName6.getText();
-        Integer[] p6Placings = getPlayerPlacings(s,P6);
-        if(p6Placings[0] != 0){
-            FirstP6.setText(String.valueOf(p6Placings[0]));
-        }
-        if(p6Placings[1] != 0){
-            SecondP6.setText(String.valueOf(p6Placings[1]));
-        }
-        if(p6Placings[2] != 0){
-            ThirdP6.setText(String.valueOf(p6Placings[2]));
-        }
-
-        String P7 = PlayerName7.getText();
-        Integer[] p7Placings = getPlayerPlacings(s,P7);
-        if(p7Placings[0] != 0){
-            FirstP7.setText(String.valueOf(p7Placings[0]));
-        }
-        if(p7Placings[1] != 0){
-            SecondP7.setText(String.valueOf(p7Placings[1]));
-        }
-        if(p7Placings[2] != 0){
-            ThirdP7.setText(String.valueOf(p7Placings[2]));
-        }
-
-        String P8 = PlayerName8.getText();
-        Integer[] p8Placings = getPlayerPlacings(s,P8);
-        if(p8Placings[0] != 0){
-            FirstP8.setText(String.valueOf(p8Placings[0]));
-        }
-        if(p8Placings[1] != 0){
-            SecondP8.setText(String.valueOf(p8Placings[1]));
-        }
-        if(p8Placings[2] != 0){
-            ThirdP8.setText(String.valueOf(p8Placings[2]));
-        }
-
-        String P9 = PlayerName9.getText();
-        Integer[] p9Placings = getPlayerPlacings(s,P9);
-        if(p9Placings[0] != 0){
-            FirstP9.setText(String.valueOf(p9Placings[0]));
-        }
-        if(p9Placings[1] != 0){
-            SecondP9.setText(String.valueOf(p9Placings[1]));
-        }
-        if(p9Placings[2] != 0){
-            ThirdP9.setText(String.valueOf(p9Placings[2]));
-        }
-
-        String P10 = PlayerName10.getText();
-        Integer[] p10Placings = getPlayerPlacings(s,P10);
-        if(p10Placings[0] != 0){
-            FirstP10.setText(String.valueOf(p10Placings[0]));
-        }
-        if(p10Placings[1] != 0){
-            SecondP10.setText(String.valueOf(p10Placings[1]));
-        }
-        if(p10Placings[2] != 0){
-            ThirdP10.setText(String.valueOf(p10Placings[2]));
-        }
-    }
-
-    // Todo needs fixing for V3
-    private Integer[] getPlayerPlacings(Season s, String playerTag){
-        Integer[] placings = new Integer[3];
-        placings[0] = 0;
-        placings[1] = 0;
-        placings[2] = 0;
-        for (String tournament:s.tournaments) {
-            try {
-                String fileLocation = "Data/" + CurrentGame.getText() + "/Tournaments/CSVFiles/" + tournament + ".csv";
-                FileReader fr = new FileReader(fileLocation);
-                BufferedReader br = new BufferedReader(fr);
-                int lineCnt = 0;
-                String line = "";
-                while((line = br.readLine()) != null){
-                    lineCnt++;
-                    if(lineCnt == 2){
-                        String[] top3 = line.split(",");
-                        if(playerTag.equals(top3[0])){
-                            placings[0] = placings[0] + 1;
-                        }
-                        if(playerTag.equals(top3[1])){
-                            placings[1] = placings[1] + 1;
-                        }
-                        if(playerTag.equals(top3[2])){
-                            placings[2] = placings[2] + 1;
-                        }
-                    }
-                }
-            }catch (IOException ioe){
-                System.out.println("Could not read Tournament");
-            }
-        }
-        return placings;
-    }
-
-    // Todo needs fixing for V3
     public void updatePlayerStatistics(){
         String Player = SelectPlayerStatistics.getValue();
-        Season s = getSeason(CurrentGame.getText(),CurrentSeason.getText());
-        HashMap<String,Integer[]> Sets = s.getSetCounts(SelectPlayerStatistics.getValue(),CurrentGame.getText());
+        Database DB = new Database();
+        ResultSet thePlayer = DB.getPlayer2(Player, DB.getSeasonID(CurrentSeason.getText(), CurrentGame.getText()));
+        Player player = new Player(thePlayer);
+        // ToDo need to add set counts query in Database class
+        HashMap<String,Integer[]> Sets = new HashMap<>();
         Set<String> opponents = Sets.keySet();
         ArrayList<String> SetStrings = new ArrayList<>();
         int wins = 0;
@@ -1869,7 +1683,7 @@ public class StartScreenController implements Initializable{
             losses = losses + setCount[1];
         }
         TourneysEntered.setVisible(true);
-        TourneysEntered.setText("Tournaments Attended: " + String.valueOf(tournamentsEntered(Player)));
+        TourneysEntered.setText("Tournaments Attended: " + String.valueOf(player.tournamentsEntered));
         CurrentRank.setVisible(true);
         CurrentRank.setText("Current Rank: " + String.valueOf(getPlayerRank(Player)));
         SetList.getItems().clear();
@@ -1886,21 +1700,21 @@ public class StartScreenController implements Initializable{
         }
     }
 
-    // Todo needs fixing for V3
+    // add other unusable tags
     public int getPlayerRank(String player){
-        Season s = getSeason(CurrentGame.getText(), CurrentSeason.getText());
-        ArrayList<Player> orderedPlayersOld = s.orderedList();
+        Database DB = new Database();
+        int seasonID = DB.getSeasonID(CurrentSeason.getText(), CurrentGame.getText());
+        ArrayList<Player> orderedPlayersOld = DB.getOrderedList(seasonID, minimumTE);;
         ArrayList<String> orderedPlayers = new ArrayList<>();
         int j = 0;
         for (Player p: orderedPlayersOld) {
-            if(!p.tag.contains("Bye")){
+            if(!p.tag.startsWith("Bye")){
                 orderedPlayers.add(p.tag);
             }
             j++;
         }
         int i = 1;
         for (String p:orderedPlayers) {
-            System.out.println(p + " = " + player);
             if(p.equals(player)){
                 return i;
             }
@@ -1909,128 +1723,137 @@ public class StartScreenController implements Initializable{
         return 999;
     }
 
-    // Todo needs fixing for V3
-    private int tournamentsEntered(String player){
-        int numberOfTourneys = 0;
-        Season s = getSeason(CurrentGame.getText(), CurrentSeason.getText());
-        for (String tournament:s.tournaments) {
-            try {
-                String fileLocation = "Data/" + CurrentGame.getText() + "/Tournaments/CSVFiles/" + tournament + ".csv";
-                FileReader fr = new FileReader(fileLocation);
-                BufferedReader br = new BufferedReader(fr);
-                int lineCnt = 0;
-                String line;
-                boolean inTournament = false;
-                while((line = br.readLine()) != null){
-                    lineCnt++;
-                    if(lineCnt > 1){
-                        if(line.contains(player)){
-                            inTournament = true;
-                        }
+//    // Todo needs fixing for V3
+//    private int tournamentsEntered(String player){
+//        int numberOfTourneys = 0;
+//        Season s = getSeason(CurrentGame.getText(), CurrentSeason.getText());
+//        for (String tournament:s.tournaments) {
+//            try {
+//                String fileLocation = "Data/" + CurrentGame.getText() + "/Tournaments/CSVFiles/" + tournament + ".csv";
+//                FileReader fr = new FileReader(fileLocation);
+//                BufferedReader br = new BufferedReader(fr);
+//                int lineCnt = 0;
+//                String line;
+//                boolean inTournament = false;
+//                while((line = br.readLine()) != null){
+//                    lineCnt++;
+//                    if(lineCnt > 1){
+//                        if(line.contains(player)){
+//                            inTournament = true;
+//                        }
+//                    }
+//                }
+//                if(inTournament){
+//                    numberOfTourneys++;
+//                }
+//            }catch (IOException ioe){
+//                System.out.println("Couldn't read tournement: " + tournament);
+//            }
+//        }
+//        return numberOfTourneys;
+//    }
+
+    // Todo needs to be added for V3
+    public void combinePlayers(){
+//        String basePlayer = BasePlayer.getValue();
+//        String mergePlayer = MergePlayer.getValue();
+//        Season s = getSeason(CurrentGame.getText(), CurrentSeason.getText());
+//        s.combinePlayers(CurrentGame.getText(),basePlayer,mergePlayer);
+//
+//        updateTopTen();
+//        updateCharactersAndPlacings();
+//        fillPlayerBox();
+    }
+
+//    public void updateWinRates(){
+//        if(PlayerName1.getText().equals("")){
+//            P1WR.setText("");
+//        } else {
+//            updateWinRate(PlayerName1,P1WR);
+//        }
+//
+//        if(PlayerName2.getText().equals("")){
+//            P2WR.setText("");
+//        } else {
+//            updateWinRate(PlayerName2,P2WR);
+//        }
+//
+//        if(PlayerName3.getText().equals("")){
+//            P3WR.setText("");
+//        } else {
+//            updateWinRate(PlayerName3,P3WR);
+//        }
+//
+//        if(PlayerName4.getText().equals("")){
+//            P4WR.setText("");
+//        } else {
+//            updateWinRate(PlayerName4,P4WR);
+//        }
+//
+//        if(PlayerName5.getText().equals("")){
+//            P5WR.setText("");
+//        } else {
+//            updateWinRate(PlayerName5,P5WR);
+//        }
+//
+//        if(PlayerName6.getText().equals("")){
+//            P6WR.setText("");
+//        } else {
+//            updateWinRate(PlayerName6,P6WR);
+//        }
+//
+//        if(PlayerName7.getText().equals("")){
+//            P7WR.setText("");
+//        } else {
+//            updateWinRate(PlayerName7,P7WR);
+//        }
+//
+//        if(PlayerName8.getText().equals("")){
+//            P8WR.setText("");
+//        } else {
+//            updateWinRate(PlayerName8,P8WR);
+//        }
+//
+//        if(PlayerName9.getText().equals("")){
+//            P9WR.setText("");
+//        } else {
+//            updateWinRate(PlayerName9,P9WR);
+//        }
+//
+//        if(PlayerName10.getText().equals("")){
+//            P10WR.setText("");
+//        } else {
+//            updateWinRate(PlayerName10,P10WR);
+//        }
+//    }
+
+    private void updateWinRate(Player player, Label WR){
+        Database DB = new Database();
+        ResultSet rst = DB.executeQuery("Select * from Matches where player1ID = " + player.playerID + " or player2ID = " + player.playerID);
+        int wins = 0;
+        int total = 0;
+        try {
+            while (rst.next()){
+                total++;
+                int player1ID = rst.getInt("player1ID");
+                int p1wins = rst.getInt("player1Count");
+                int p2wins = rst.getInt("player2Count");
+                if(player1ID == player.playerID){
+                    if(p1wins > p2wins){
+                        wins++;
+                    }
+                } else {
+                    if(p2wins > p1wins){
+                        wins++;
                     }
                 }
-                if(inTournament){
-                    numberOfTourneys++;
-                }
-            }catch (IOException ioe){
-                System.out.println("Couldn't read tournement: " + tournament);
             }
+        } catch (SQLException sqle){
+            System.out.println("Couldn't get Matches for player " + player.playerID);
+            sqle.printStackTrace();
         }
-        return numberOfTourneys;
-    }
-
-    // Todo needs fixing for V3
-    public void combinePlayers(){
-        String basePlayer = BasePlayer.getValue();
-        String mergePlayer = MergePlayer.getValue();
-        Season s = getSeason(CurrentGame.getText(), CurrentSeason.getText());
-        s.combinePlayers(CurrentGame.getText(),basePlayer,mergePlayer);
-
-        updateTopTen();
-        updateCharactersAndPlacings();
-        fillPlayerBox();
-    }
-
-    // Todo needs fixing for V3
-    public void updateWinRates(){
-        if(PlayerName1.getText().equals("")){
-            P1WR.setText("");
-        } else {
-            updateWinRate(PlayerName1,P1WR);
-        }
-
-        if(PlayerName2.getText().equals("")){
-            P2WR.setText("");
-        } else {
-            updateWinRate(PlayerName2,P2WR);
-        }
-
-        if(PlayerName3.getText().equals("")){
-            P3WR.setText("");
-        } else {
-            updateWinRate(PlayerName3,P3WR);
-        }
-
-        if(PlayerName4.getText().equals("")){
-            P4WR.setText("");
-        } else {
-            updateWinRate(PlayerName4,P4WR);
-        }
-
-        if(PlayerName5.getText().equals("")){
-            P5WR.setText("");
-        } else {
-            updateWinRate(PlayerName5,P5WR);
-        }
-
-        if(PlayerName6.getText().equals("")){
-            P6WR.setText("");
-        } else {
-            updateWinRate(PlayerName6,P6WR);
-        }
-
-        if(PlayerName7.getText().equals("")){
-            P7WR.setText("");
-        } else {
-            updateWinRate(PlayerName7,P7WR);
-        }
-
-        if(PlayerName8.getText().equals("")){
-            P8WR.setText("");
-        } else {
-            updateWinRate(PlayerName8,P8WR);
-        }
-
-        if(PlayerName9.getText().equals("")){
-            P9WR.setText("");
-        } else {
-            updateWinRate(PlayerName9,P9WR);
-        }
-
-        if(PlayerName10.getText().equals("")){
-            P10WR.setText("");
-        } else {
-            updateWinRate(PlayerName10,P10WR);
-        }
-    }
-
-    // Todo needs fixing for V3
-    private void updateWinRate(Label player, Label WR){
-        Season s = getSeason(CurrentGame.getText(),CurrentSeason.getText());
-        HashMap<String,Integer[]> Sets = s.getSetCounts(player.getText(),CurrentGame.getText());
-        Set<String> opponents = Sets.keySet();
-        ArrayList<String> SetStrings = new ArrayList<>();
-        int wins = 0;
-        int losses = 0;
-        for (String opponent:opponents) {
-            Integer[] setCount = Sets.get(opponent);
-            String set = setCount[0] + " W " + setCount[1] + " L vs. " + opponent;
-            SetStrings.add(set);
-            wins = wins + setCount[0];
-            losses = losses + setCount[1];
-        }
-        double percentage = Math.round(((double) wins / (wins + losses)) * 100);
-        if(wins == 0 && losses == 0){
+        double percentage = Math.round(((double) wins / (double) total) * 100);
+        if(total == 0){
             WR.setText("-");
         } else {
             WR.setText(String.valueOf(percentage) + "%");
@@ -2053,12 +1876,6 @@ public class StartScreenController implements Initializable{
         try {
             updateTopTen();
             Thread.sleep(20);
-            updateCharactersAndPlacings();
-            Thread.sleep(20);
-            updatePlacings();
-            Thread.sleep(20);
-            updateWinRates();
-            Thread.sleep(20);
             fillCharacterList();
             Thread.sleep(20);
             fillPlayerBox();
@@ -2069,13 +1886,12 @@ public class StartScreenController implements Initializable{
         }
     }
 
-    // Todo needs fixing for V3
     private void fillFullPR(){
-        Season s = getSeason(CurrentGame.getText(), CurrentSeason.getText());
-        ArrayList<Player> players = s.orderedList();
+        Database DB = new Database();
+        ArrayList<Player> players = DB.getOrderedList(DB.getSeasonID(CurrentSeason.getText(), CurrentGame.getText()),minimumTE);
         ArrayList<String> tags = new ArrayList<>();
         for (Player P:players) {
-            if(!P.tag.contains("Bye")){
+            if(!P.tag.startsWith("Bye")){
                 tags.add(P.tag);
             }
         }
@@ -2094,16 +1910,17 @@ public class StartScreenController implements Initializable{
         StagesClass.tutorialStage.show();
     }
 
-    // Todo needs fixing for V3
+    // Todo needs to be added in Database class for V3
     public void deleteSeason(){
-        if(DeleteSeason.getValue() != null){
-            File deletedSeason = new File("Data/" + CurrentGame.getText() + "/Seasons/" + DeleteSeason.getValue());
-            if(deletedSeason.delete()){
-                System.out.println("Season Deleted");
-            } else {
-                System.out.println("Season not Deleted");
-            }
-        }
-        updateSeasonList();
+//        if(DeleteSeason.getValue() != null){
+//            File deletedSeason = new File("Data/" + CurrentGame.getText() + "/Seasons/" + DeleteSeason.getValue());
+//            if(deletedSeason.delete()){
+//                System.out.println("Season Deleted");
+//            } else {
+//                System.out.println("Season not Deleted");
+//            }
+//        }
+//        updateSeasonList();
+
     }
 }
