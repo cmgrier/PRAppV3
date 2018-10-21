@@ -9,7 +9,7 @@ import javafx.scene.text.Font;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-
+import com.jfoenix.controls.*;
 import javax.xml.crypto.Data;
 import java.io.*;
 import java.net.URL;
@@ -37,7 +37,7 @@ public class StartScreenController implements Initializable{
     ComboBox<String> ChangeSeason, ChangeGame, SelectPlayer, SelectPlayerStatistics, FirstCharacter, SecondCharacter, ThirdCharacter, DefaultSeasonBox, DefaultGameBox, BasePlayer, MergePlayer, RemoveTournament, DeleteSeason;
 
     @FXML
-    Label CurrentGame, CurrentSeason, TitleText, WinLoss, WinPercentage, TourneysEntered, CurrentRank;
+    Label CurrentGame, CurrentSeason, TitleText, WinLoss, WinPercentage, TourneysEntered, CurrentRank = new Label();
 
     @FXML
     ListView SetList, TournamentList;
@@ -47,10 +47,11 @@ public class StartScreenController implements Initializable{
             FirstP6,SecondP6,ThirdP6,FirstP7,SecondP7,ThirdP7,FirstP8,SecondP8,ThirdP8,FirstP9,SecondP9,ThirdP9,FirstP10,SecondP10,ThirdP10 = new Label();
 
     @FXML
-    Label PlayerName1,PlayerName2,PlayerName3,PlayerName4,PlayerName5,PlayerName6,PlayerName7,PlayerName8,PlayerName9,PlayerName10 = new Label();
+    Label PlayerName1,PlayerName2,PlayerName3,PlayerName4,PlayerName5,PlayerName6,PlayerName7,PlayerName8,PlayerName9,PlayerName10,
+            Sponsor1,Sponsor2,Sponsor3,Sponsor4,Sponsor5,Sponsor6,Sponsor7,Sponsor8,Sponsor9,Sponsor10 = new Label();
 
     @FXML
-    Label P1WR, P2WR, P3WR, P4WR, P5WR, P6WR, P7WR, P8WR, P9WR, P10WR, P1SCR, P2SCR, P3SCR, P4SCR, P5SCR, P6SCR, P7SCR, P8SCR, P9SCR, P10SCR;
+    Label P1WR, P2WR, P3WR, P4WR, P5WR, P6WR, P7WR, P8WR, P9WR, P10WR, P1SCR, P2SCR, P3SCR, P4SCR, P5SCR, P6SCR, P7SCR, P8SCR, P9SCR, P10SCR = new Label();
 
     @FXML
     ImageView Characters11, Characters12, Characters13, Characters21, Characters22, Characters23, Characters31, Characters32, Characters33 ,
@@ -60,6 +61,9 @@ public class StartScreenController implements Initializable{
 
     @FXML
     Pane P1Arrow, P2Arrow, P3Arrow, P4Arrow, P5Arrow, P6Arrow, P7Arrow, P8Arrow, P9Arrow, P10Arrow;
+
+    @FXML
+    JFXCheckBox EloMethod, PlacingBonusMethod, PlacementMethod, ScheduleStrengthMethod = new JFXCheckBox();
 
     //Character images below
     private Image Miigunner = new Image("CharacterIcons/stock_90_miigunner_01.png");
@@ -236,7 +240,7 @@ public class StartScreenController implements Initializable{
     String defaultSeason = "";
     int minimumTE = 0;
     int K = 24;
-    String currentMethod = "Placement";
+    String currentMethod = "";
 
     @Override
     public void initialize(URL url, ResourceBundle rb){
@@ -292,18 +296,24 @@ public class StartScreenController implements Initializable{
                         ArrayList<String> seasons = DB.getSeasons("all");
                         defaultSeason = seasons.get(0);
                     }
+                    System.out.println("default Season: " + defaultSeason);
                 }
                 if(lineCnt == 3){
                     defaultGame = line;
-                    if(defaultGame.equals("default")){
+                    if(defaultGame.equals("<default>")){
                         Database DB = new Database();
+                        defaultGame = DB.getGame(defaultSeason);
                     }
+                    System.out.println("default game: " + defaultGame);
                 }
                 if(lineCnt == 4){
                     K = Integer.parseInt(line);
                 }
                 if(lineCnt == 5){
                     minimumTE = Integer.parseInt(line);
+                }
+                if(lineCnt == 6){
+                    currentMethod = line;
                 }
             }
             br.close();
@@ -521,31 +531,15 @@ public class StartScreenController implements Initializable{
     }
 
 
-    // Todo needs fixing for V3
     public void createSeason(){
         String game = CurrentGame.getText();
         if(newSeasonTitle.getText() != null) {
             String seasonTitle = newSeasonTitle.getText();
-            try {
-                FileWriter fw = new FileWriter("Data/" + game + "/Seasons/" + seasonTitle + ".csv");
-                BufferedWriter bw = new BufferedWriter(fw);
-                bw.write(seasonTitle);
-                bw.close();
-                fw.close();
-            } catch (IOException ioe) {
-                System.out.println("couldn't create season");
-            }
+            Database DB = new Database();
+            DB.addNewSeason(seasonTitle,game);
         } else {
-            String seasonTitle = "NewSeason";
-            try {
-                FileWriter fw = new FileWriter("Data/" + game + "/Seasons/" + seasonTitle + ".csv");
-                BufferedWriter bw = new BufferedWriter(fw);
-                bw.write(seasonTitle);
-                bw.close();
-                fw.close();
-            } catch (IOException ioe) {
-                System.out.println("couldn't create season");
-            }
+            System.out.println("couldn't create season, no name given");
+
         }
         updateSeasonList();
         updateTournamentList();
@@ -701,7 +695,7 @@ public class StartScreenController implements Initializable{
         pane.getChildren().add(Arrow);
     }
 
-    private void updateEntry(Player player, ImageView character1, ImageView character2, ImageView character3, Label firstPlace, Label secondPlace, Label thirdPlace, Label WR){
+    private void updateEntry(Player player, ImageView character1, ImageView character2, ImageView character3, Label firstPlace, Label secondPlace, Label thirdPlace, Label WR, Label Sponsor){
         if(player.tag.equals("")){
             character1.setImage(null);
             character2.setImage(null);
@@ -709,6 +703,8 @@ public class StartScreenController implements Initializable{
             firstPlace.setText(null);
             secondPlace.setText(null);
             thirdPlace.setText(null);
+            WR.setText(null);
+            Sponsor.setText(null);
         } else{
             ArrayList<String> characters = player.getCharacters();
             if(characters.size() > 1){
@@ -740,9 +736,8 @@ public class StartScreenController implements Initializable{
             firstPlace.setText(String.valueOf(firstPlaces));
             secondPlace.setText(String.valueOf(secondPlaces));
             thirdPlace.setText(String.valueOf(thirdPlaces));
-
             updateWinRate(player, WR);
-
+            Sponsor.setText(player.sponsor);
         }
     }
 
@@ -751,16 +746,16 @@ public class StartScreenController implements Initializable{
         int seasonID = DB.getSeasonID(CurrentSeason.getText(), CurrentGame.getText());
         updateTagsScoresArrows();
         ArrayList<Player> players = DB.getOrderedList(seasonID, minimumTE);
-        updateEntry(players.get(0), Characters11, Characters12, Characters13, FirstP1, SecondP1, ThirdP1, P1WR);
-        updateEntry(players.get(1), Characters21, Characters22, Characters23, FirstP2, SecondP2, ThirdP2, P2WR);
-        updateEntry(players.get(2), Characters31, Characters32, Characters33, FirstP3, SecondP3, ThirdP3, P3WR);
-        updateEntry(players.get(3), Characters41, Characters42, Characters43, FirstP4, SecondP4, ThirdP4, P4WR);
-        updateEntry(players.get(4), Characters51, Characters52, Characters53, FirstP5, SecondP5, ThirdP5, P5WR);
-        updateEntry(players.get(5), Characters61, Characters62, Characters63, FirstP6, SecondP6, ThirdP6, P6WR);
-        updateEntry(players.get(6), Characters71, Characters72, Characters73, FirstP7, SecondP7, ThirdP7, P7WR);
-        updateEntry(players.get(7), Characters81, Characters82, Characters83, FirstP8, SecondP8, ThirdP8, P8WR);
-        updateEntry(players.get(8), Characters91, Characters92, Characters93, FirstP9, SecondP9, ThirdP9, P9WR);
-        updateEntry(players.get(9), Characters101, Characters102, Characters103, FirstP10, SecondP10, ThirdP10, P10WR);
+        updateEntry(players.get(0), Characters11, Characters12, Characters13, FirstP1, SecondP1, ThirdP1, P1WR, Sponsor1);
+        updateEntry(players.get(1), Characters21, Characters22, Characters23, FirstP2, SecondP2, ThirdP2, P2WR, Sponsor2);
+        updateEntry(players.get(2), Characters31, Characters32, Characters33, FirstP3, SecondP3, ThirdP3, P3WR, Sponsor3);
+        updateEntry(players.get(3), Characters41, Characters42, Characters43, FirstP4, SecondP4, ThirdP4, P4WR, Sponsor4);
+        updateEntry(players.get(4), Characters51, Characters52, Characters53, FirstP5, SecondP5, ThirdP5, P5WR, Sponsor5);
+        updateEntry(players.get(5), Characters61, Characters62, Characters63, FirstP6, SecondP6, ThirdP6, P6WR, Sponsor6);
+        updateEntry(players.get(6), Characters71, Characters72, Characters73, FirstP7, SecondP7, ThirdP7, P7WR, Sponsor7);
+        updateEntry(players.get(7), Characters81, Characters82, Characters83, FirstP8, SecondP8, ThirdP8, P8WR, Sponsor8);
+        updateEntry(players.get(8), Characters91, Characters92, Characters93, FirstP9, SecondP9, ThirdP9, P9WR, Sponsor9);
+        updateEntry(players.get(9), Characters101, Characters102, Characters103, FirstP10, SecondP10, ThirdP10, P10WR, Sponsor10);
     }
 
     // Todo need to add new characters recently released
@@ -1322,42 +1317,59 @@ public class StartScreenController implements Initializable{
 //        updateTournamentList();
     }
 
-    // Todo needs to be redone for V3
     public void alterPlayer(){
-//        Season s = getSeason(CurrentGame.getText(),CurrentSeason.getText());
-//        for (Player p:s.players) {
-//            if(p.tag.equals(SelectPlayer.getValue())){
-//                ArrayList<String> newCharacterList = new ArrayList<>();
-//                if((FirstCharacter.getValue() != null) || (!FirstCharacter.getValue().equals("<Clear>"))){
-//                    newCharacterList.add(FirstCharacter.getValue());
-//                    System.out.println(FirstCharacter.getValue());
-//                }
-//                if(((SecondCharacter.getValue() != null) || (!FirstCharacter.getValue().equals("<Clear>"))) && (!FirstCharacter.getValue().equals(SecondCharacter.getValue()))){
-//                    newCharacterList.add(SecondCharacter.getValue());
-//                    System.out.println(SecondCharacter.getValue());
-//                }
-//                if(((ThirdCharacter.getValue() != null) || (!FirstCharacter.getValue().equals("<Clear>"))) && (!SecondCharacter.getValue().equals(ThirdCharacter.getValue())) && (!FirstCharacter.getValue().equals(ThirdCharacter.getValue()))){
-//                    newCharacterList.add(ThirdCharacter.getValue());
-//                    System.out.println(ThirdCharacter.getValue());
-//                }
-//                newCharacterList.remove("<Clear>");
-//                newCharacterList.remove(null);
-//                newCharacterList.remove("First Character");
-//                newCharacterList.remove("Second Character");
-//                newCharacterList.remove("Third Character");
-//                p.setCharacters(newCharacterList);
-//                if(PlayerScore.getText() != null){
-//                    p.setScore(Double.parseDouble(PlayerScore.getText()));
-//                }
-//                if(InitialScore.getText() != null){
-//                    p.setInitialScore(Double.parseDouble(InitialScore.getText()));
-//                }
-//            }
-//        }
-//        s.writeSeason(CurrentGame.getText());
-//        updateCharactersAndPlacings();
-//        updateTopTen();
-//        fillCharacterList();
+        Database DB = new Database();
+        int seasonID = DB.getSeasonID(CurrentSeason.getText(),CurrentGame.getText());
+        ArrayList<Player> players = DB.getPlayers(seasonID);
+        for (Player p : players) {
+            if(p.tag.equals(SelectPlayer.getValue())){
+                ArrayList<String> newCharacterList = new ArrayList<>();
+                if((FirstCharacter.getValue() != null) || (!FirstCharacter.getValue().equals("<Clear>"))){
+                    newCharacterList.add(FirstCharacter.getValue());
+                    System.out.println(FirstCharacter.getValue());
+                }
+                if(((SecondCharacter.getValue() != null) || (!FirstCharacter.getValue().equals("<Clear>"))) && (!FirstCharacter.getValue().equals(SecondCharacter.getValue()))){
+                    newCharacterList.add(SecondCharacter.getValue());
+                    System.out.println(SecondCharacter.getValue());
+                }
+                if(((ThirdCharacter.getValue() != null) || (!FirstCharacter.getValue().equals("<Clear>"))) && (!SecondCharacter.getValue().equals(ThirdCharacter.getValue())) && (!FirstCharacter.getValue().equals(ThirdCharacter.getValue()))){
+                    newCharacterList.add(ThirdCharacter.getValue());
+                    System.out.println(ThirdCharacter.getValue());
+                }
+                newCharacterList.remove("<Clear>");
+                newCharacterList.remove(null);
+                newCharacterList.remove("First Character");
+                newCharacterList.remove("Second Character");
+                newCharacterList.remove("Third Character");
+                String characters = "";
+                for (String character:newCharacterList) {
+                    characters += character + "&";
+                }
+                if(characters.length() > 0){
+                    characters = characters.substring(0,characters.length()-1);
+                }
+                DB.updateCharacters(p.playerID, characters);
+
+                if(InitialScore.getText() != null){
+                    p.initialScore = Integer.parseInt(InitialScore.getText());
+                }
+            }
+        }
+        updateTopTen();
+        fillCharacterList();
+    }
+
+    public void save(){
+        Database DB = new Database();
+        DB.publish();
+    }
+
+    public void resetChanges(){
+        Database DB = new Database();
+        DB.populateDatabases();
+        updateTopTen();
+        updateTournamentList();
+        updateSeasonList();
     }
 
     // Todo needs to be redone for V3
@@ -1500,6 +1512,19 @@ public class StartScreenController implements Initializable{
         Database DB = new Database();
         int seasonID = DB.getSeasonID(CurrentSeason.getText(), CurrentGame.getText());
         DB.resetScores(seasonID);
+        String currentMethod = "";
+        if(EloMethod.isSelected()){
+            currentMethod = currentMethod + "Elo";
+        }
+        if(PlacementMethod.isSelected()){
+            currentMethod = currentMethod + "Placement";
+        }
+        if(PlacingBonusMethod.isSelected()){
+            currentMethod = currentMethod + "Placing Bonus";
+        }
+        if(ScheduleStrengthMethod.isSelected()){
+            currentMethod = currentMethod + "Strength of Schedule";
+        }
         DB.updateScores(currentMethod, seasonID);
         updateTopTen();
     }
@@ -1664,13 +1689,54 @@ public class StartScreenController implements Initializable{
 //        return placings;
 //    }
 
+
     public void updatePlayerStatistics(){
         String Player = SelectPlayerStatistics.getValue();
         Database DB = new Database();
         ResultSet thePlayer = DB.getPlayer2(Player, DB.getSeasonID(CurrentSeason.getText(), CurrentGame.getText()));
         Player player = new Player(thePlayer);
-        // ToDo need to add set counts query in Database class
+        ArrayList<Match> matches = DB.getMatches(player.playerID);
         HashMap<String,Integer[]> Sets = new HashMap<>();
+        for (Match m:matches) {
+            Integer[] setCount = new Integer[2];
+            if(player.playerID == m.player1ID){
+                Player opponent = new Player(DB.getPlayer(m.player2ID));
+                if(Sets.containsKey(opponent.tag)){
+                    setCount = Sets.get(opponent.tag);
+                } else {
+                    setCount[0] = 0;
+                    setCount[1] = 0;
+                }
+                if(m.player1Count > m.player2Count){
+                    setCount[0] = setCount[0] + 1;
+                } else {
+                    setCount[1] = setCount[1] + 1;
+                }
+                if(Sets.containsKey(opponent.tag)){
+                    Sets.replace(opponent.tag, setCount);
+                } else {
+                    Sets.put(opponent.tag, setCount);
+                }
+            } else {
+                Player opponent = new Player(DB.getPlayer(m.player1ID));
+                if(Sets.containsKey(opponent.tag)){
+                    setCount = Sets.get(opponent.tag);
+                } else {
+                    setCount[0] = 0;
+                    setCount[1] = 0;
+                }
+                if(m.player1Count < m.player2Count){
+                    setCount[0] = setCount[0] + 1;
+                } else {
+                    setCount[1] = setCount[1] + 1;
+                }
+                if(Sets.containsKey(opponent.tag)){
+                    Sets.replace(opponent.tag, setCount);
+                } else {
+                    Sets.put(opponent.tag, setCount);
+                }
+            }
+        }
         Set<String> opponents = Sets.keySet();
         ArrayList<String> SetStrings = new ArrayList<>();
         int wins = 0;
@@ -1828,46 +1894,52 @@ public class StartScreenController implements Initializable{
 //    }
 
     private void updateWinRate(Player player, Label WR){
-        Database DB = new Database();
-        ResultSet rst = DB.executeQuery("Select * from Matches where player1ID = " + player.playerID + " or player2ID = " + player.playerID);
-        int wins = 0;
-        int total = 0;
-        try {
-            while (rst.next()){
-                total++;
-                int player1ID = rst.getInt("player1ID");
-                int p1wins = rst.getInt("player1Count");
-                int p2wins = rst.getInt("player2Count");
-                if(player1ID == player.playerID){
-                    if(p1wins > p2wins){
-                        wins++;
-                    }
-                } else {
-                    if(p2wins > p1wins){
-                        wins++;
+        if(player.tag.equals("")){
+            WR.setVisible(false);
+            System.out.println("No Player");
+        } else {
+            System.out.println("Player " + player.tag);
+            Database DB = new Database();
+            ResultSet rst = DB.executeQuery("Select * from Matches where player1ID = " + player.playerID + " or player2ID = " + player.playerID);
+            int wins = 0;
+            int total = 0;
+            try {
+                while (rst.next()) {
+                    total++;
+                    int player1ID = rst.getInt("player1ID");
+                    int p1wins = rst.getInt("player1Count");
+                    int p2wins = rst.getInt("player2Count");
+                    if (player1ID == player.playerID) {
+                        if (p1wins > p2wins) {
+                            wins++;
+                        }
+                    } else {
+                        if (p2wins > p1wins) {
+                            wins++;
+                        }
                     }
                 }
+                rst.close();
+            } catch (SQLException sqle) {
+                System.out.println("Couldn't get Matches for player " + player.playerID);
+                sqle.printStackTrace();
             }
-        } catch (SQLException sqle){
-            System.out.println("Couldn't get Matches for player " + player.playerID);
-            sqle.printStackTrace();
-        }
-        double percentage = Math.round(((double) wins / (double) total) * 100);
-        if(total == 0){
-            WR.setText("-");
-        } else {
-            WR.setText(String.valueOf(percentage) + "%");
+            double percentage = Math.round(((double) wins / (double) total) * 100);
+            if (total == 0) {
+                WR.setText("-");
+            } else {
+                WR.setText(String.valueOf(percentage) + "%");
+            }
         }
     }
 
     // Todo needs fixing for V3
-    private void updateScore(Label LabelScore, double score){
-        if(score == 0.0){
+    private void updateScore(Label LabelScore, int score){
+        if(score == 0){
             LabelScore.setVisible(false);
         } else {
             LabelScore.setVisible(true);
-            int intScore = (int) score;
-            LabelScore.setText(String.valueOf(intScore));
+            LabelScore.setText(String.valueOf(score));
         }
     }
 

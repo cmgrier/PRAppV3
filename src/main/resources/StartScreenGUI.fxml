@@ -1,0 +1,1109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXCheckBox?>
+<?import com.jfoenix.controls.JFXDrawer?>
+<?import java.lang.Double?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.shape.Polygon?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="900.0" prefWidth="1500.0" stylesheets="StyleSheets/ButtonStyles.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="StartScreenController">
+   <children>
+      <Polygon fill="WHITE" layoutY="201.0" opacity="0.5" stroke="#b9b9b9" strokeType="INSIDE" strokeWidth="3.0">
+        <points>
+          <Double fx:value="0.0" /> <Double fx:value="0.0" />
+          <Double fx:value="186.0" /> <Double fx:value="0.0" />
+          <Double fx:value="186.0" /> <Double fx:value="598.0" />
+           <Double fx:value="0.0" /> <Double fx:value="598.0" />
+        </points>
+      </Polygon>
+      <Polygon fill="#ff1f1fc5" layoutY="39.0" stroke="BLACK" strokeType="INSIDE">
+        <points>
+          <Double fx:value="0.0" /> <Double fx:value="100" />
+          <Double fx:value="0.0" /> <Double fx:value="0.0" />
+          <Double fx:value="1100.0" /> <Double fx:value="0.0" />
+          <Double fx:value="1050.0" /> <Double fx:value="100.0" />
+        </points>
+      </Polygon>
+      <GridPane fx:id="table" gridLinesVisible="true" layoutX="264.0" layoutY="170.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="660.0" prefWidth="920.0">
+        <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="75.0" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="105.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="-Infinity" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="170.0" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="135.0" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="95.0" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints maxHeight="100.0" minHeight="25.0" prefHeight="60.0" vgrow="SOMETIMES" />
+          <RowConstraints maxHeight="100.0" minHeight="50.0" prefHeight="60.0" vgrow="SOMETIMES" />
+          <RowConstraints maxHeight="100.0" minHeight="25.0" prefHeight="60.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="100.0" minHeight="25.0" prefHeight="60.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="100.0" minHeight="25.0" prefHeight="60.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="100.0" minHeight="25.0" prefHeight="60.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="100.0" minHeight="25.0" prefHeight="60.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="100.0" minHeight="25.0" prefHeight="60.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="100.0" minHeight="25.0" prefHeight="60.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="100.0" minHeight="25.0" prefHeight="60.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="100.0" minHeight="25.0" prefHeight="60.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <Label prefHeight="21.0" prefWidth="185.0" text="Player Tag" GridPane.columnIndex="2" GridPane.halignment="LEFT">
+               <font>
+                  <Font name="System Italic" size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin></Label>
+            <Label fx:id="PlayerName1" prefHeight="21.0" prefWidth="185.0" text="PlayerName1" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="1">
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+               <font>
+                  <Font size="24.0" />
+               </font></Label>
+            <Label fx:id="PlayerName2" prefHeight="21.0" prefWidth="185.0" text="PlayerName2" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="2">
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+               <font>
+                  <Font size="24.0" />
+               </font></Label>
+            <Label fx:id="PlayerName3" prefHeight="21.0" prefWidth="185.0" text="PlayerName3" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="3">
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+               <font>
+                  <Font size="24.0" />
+               </font></Label>
+            <Label fx:id="PlayerName4" prefHeight="21.0" prefWidth="185.0" text="PlayerName4" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="4">
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+               <font>
+                  <Font size="24.0" />
+               </font></Label>
+            <Label fx:id="PlayerName5" prefHeight="21.0" prefWidth="185.0" text="PlayerName5" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="5">
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+               <font>
+                  <Font size="24.0" />
+               </font></Label>
+            <Label fx:id="PlayerName6" prefHeight="21.0" prefWidth="185.0" text="PlayerName6" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="6">
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+               <font>
+                  <Font size="24.0" />
+               </font></Label>
+            <Label fx:id="PlayerName7" prefHeight="21.0" prefWidth="185.0" text="PlayerName7" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="7">
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+               <font>
+                  <Font size="24.0" />
+               </font></Label>
+            <Label fx:id="PlayerName8" prefHeight="21.0" prefWidth="185.0" text="PlayerName8" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="8">
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+               <font>
+                  <Font size="24.0" />
+               </font></Label>
+            <Label fx:id="PlayerName9" prefHeight="21.0" prefWidth="185.0" text="PlayerName9" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="9">
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+               <font>
+                  <Font size="24.0" />
+               </font></Label>
+            <Label fx:id="PlayerName10" prefHeight="21.0" prefWidth="185.0" text="PlayerName10" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="10">
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+               <font>
+                  <Font size="24.0" />
+               </font></Label>
+            <Label prefHeight="35.0" prefWidth="115.0" text="Characters" GridPane.columnIndex="3" GridPane.halignment="LEFT">
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+               <font>
+                  <Font name="System Italic" size="24.0" />
+               </font></Label>
+            <ImageView fx:id="Characters11" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.halignment="LEFT" GridPane.rowIndex="1">
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin></ImageView>
+            <ImageView fx:id="Characters12" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.halignment="LEFT" GridPane.rowIndex="1">
+               <GridPane.margin>
+                  <Insets left="60.0" />
+               </GridPane.margin>
+            </ImageView>
+            <Label prefHeight="35.0" prefWidth="55.0" text="Rank">
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+               <font>
+                  <Font name="System Italic" size="24.0" />
+               </font>
+            </Label>
+            <Label prefHeight="35.0" prefWidth="20.0" text="1" GridPane.rowIndex="1">
+               <font>
+                  <Font name="System Bold" size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label prefHeight="35.0" prefWidth="20.0" text="2" GridPane.rowIndex="2">
+               <font>
+                  <Font name="System Bold" size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label prefHeight="35.0" prefWidth="20.0" text="3" GridPane.rowIndex="3">
+               <font>
+                  <Font name="System Bold" size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label prefHeight="35.0" prefWidth="20.0" text="4" GridPane.rowIndex="4">
+               <font>
+                  <Font name="System Bold" size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label prefHeight="35.0" prefWidth="20.0" text="5" GridPane.rowIndex="5">
+               <font>
+                  <Font name="System Bold" size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label prefHeight="35.0" prefWidth="20.0" text="6" GridPane.rowIndex="6">
+               <font>
+                  <Font name="System Bold" size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label prefHeight="35.0" prefWidth="20.0" text="7" GridPane.rowIndex="7">
+               <font>
+                  <Font name="System Bold" size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label prefHeight="35.0" prefWidth="20.0" text="8" GridPane.rowIndex="8">
+               <font>
+                  <Font name="System Bold" size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label prefHeight="35.0" prefWidth="20.0" text="9" GridPane.rowIndex="9">
+               <font>
+                  <Font name="System Bold" size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label prefHeight="35.0" prefWidth="30.0" text="10" GridPane.rowIndex="10">
+               <font>
+                  <Font name="System Bold" size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <ImageView fx:id="Characters21" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.rowIndex="2">
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </ImageView>
+            <ImageView fx:id="Characters31" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.rowIndex="3">
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </ImageView>
+            <ImageView fx:id="Characters41" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.rowIndex="4">
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </ImageView>
+            <ImageView fx:id="Characters51" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.rowIndex="5">
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </ImageView>
+            <ImageView fx:id="Characters61" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.rowIndex="6">
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </ImageView>
+            <ImageView fx:id="Characters71" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.rowIndex="7">
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </ImageView>
+            <ImageView fx:id="Characters81" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.rowIndex="8">
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </ImageView>
+            <ImageView fx:id="Characters91" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.rowIndex="9">
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </ImageView>
+            <ImageView fx:id="Characters101" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.rowIndex="10">
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </ImageView>
+            <ImageView fx:id="Characters13" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.rowIndex="1">
+               <GridPane.margin>
+                  <Insets left="110.0" />
+               </GridPane.margin>
+            </ImageView>
+            <ImageView fx:id="Characters22" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.rowIndex="2">
+               <GridPane.margin>
+                  <Insets left="60.0" />
+               </GridPane.margin>
+            </ImageView>
+            <ImageView fx:id="Characters32" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.rowIndex="3">
+               <GridPane.margin>
+                  <Insets left="60.0" />
+               </GridPane.margin>
+            </ImageView>
+            <ImageView fx:id="Characters23" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.rowIndex="2">
+               <GridPane.margin>
+                  <Insets left="110.0" />
+               </GridPane.margin>
+            </ImageView>
+            <ImageView fx:id="Characters33" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.rowIndex="3">
+               <GridPane.margin>
+                  <Insets left="110.0" />
+               </GridPane.margin>
+            </ImageView>
+            <ImageView fx:id="Characters42" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.rowIndex="4">
+               <GridPane.margin>
+                  <Insets left="60.0" />
+               </GridPane.margin>
+            </ImageView>
+            <ImageView fx:id="Characters43" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.rowIndex="4">
+               <GridPane.margin>
+                  <Insets left="110.0" />
+               </GridPane.margin>
+            </ImageView>
+            <ImageView fx:id="Characters52" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.rowIndex="5">
+               <GridPane.margin>
+                  <Insets left="60.0" />
+               </GridPane.margin>
+            </ImageView>
+            <ImageView fx:id="Characters53" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.rowIndex="5">
+               <GridPane.margin>
+                  <Insets left="110.0" />
+               </GridPane.margin>
+            </ImageView>
+            <ImageView fx:id="Characters62" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.rowIndex="6">
+               <GridPane.margin>
+                  <Insets left="60.0" />
+               </GridPane.margin>
+            </ImageView>
+            <ImageView fx:id="Characters63" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.rowIndex="6">
+               <GridPane.margin>
+                  <Insets left="110.0" />
+               </GridPane.margin>
+            </ImageView>
+            <ImageView fx:id="Characters72" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.rowIndex="7">
+               <GridPane.margin>
+                  <Insets left="60.0" />
+               </GridPane.margin>
+            </ImageView>
+            <ImageView fx:id="Characters73" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.rowIndex="7">
+               <GridPane.margin>
+                  <Insets left="110.0" />
+               </GridPane.margin>
+            </ImageView>
+            <ImageView fx:id="Characters82" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.rowIndex="8">
+               <GridPane.margin>
+                  <Insets left="60.0" />
+               </GridPane.margin>
+            </ImageView>
+            <ImageView fx:id="Characters83" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.rowIndex="8">
+               <GridPane.margin>
+                  <Insets left="110.0" />
+               </GridPane.margin>
+            </ImageView>
+            <ImageView fx:id="Characters92" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.rowIndex="9">
+               <GridPane.margin>
+                  <Insets left="60.0" />
+               </GridPane.margin>
+            </ImageView>
+            <ImageView fx:id="Characters93" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.rowIndex="9">
+               <GridPane.margin>
+                  <Insets left="110.0" />
+               </GridPane.margin>
+            </ImageView>
+            <ImageView fx:id="Characters102" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.rowIndex="10">
+               <GridPane.margin>
+                  <Insets left="60.0" />
+               </GridPane.margin>
+            </ImageView>
+            <ImageView fx:id="Characters103" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.rowIndex="10">
+               <GridPane.margin>
+                  <Insets left="110.0" />
+               </GridPane.margin>
+            </ImageView>
+            <Label alignment="CENTER" prefHeight="35.0" prefWidth="100.0" text="Placings" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.valignment="TOP">
+               <GridPane.margin>
+                  <Insets />
+               </GridPane.margin>
+               <font>
+                  <Font name="System Italic" size="24.0" />
+               </font>
+            </Label>
+            <Label text="1st" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.valignment="BOTTOM">
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+               <font>
+                  <Font name="System Italic" size="24.0" />
+               </font>
+            </Label>
+            <Label text="2nd" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
+               <GridPane.margin>
+                  <Insets />
+               </GridPane.margin>
+               <font>
+                  <Font name="System Italic" size="24.0" />
+               </font>
+            </Label>
+            <Label text="3rd" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.valignment="BOTTOM">
+               <GridPane.margin>
+                  <Insets right="10.0" />
+               </GridPane.margin>
+               <font>
+                  <Font name="System Italic" size="24.0" />
+               </font>
+            </Label>
+            <Label fx:id="FirstP1" text="1P1" GridPane.columnIndex="4" GridPane.rowIndex="1">
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+               <font>
+                  <Font size="24.0" />
+               </font>
+            </Label>
+            <Label fx:id="SecondP1" text="2P1" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.rowIndex="1">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="ThirdP1" text="3P1" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets right="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="FirstP2" text="1P2" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="2">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="FirstP3" text="1P3" GridPane.columnIndex="4" GridPane.rowIndex="3">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="FirstP4" text="1P4" GridPane.columnIndex="4" GridPane.rowIndex="4">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="FirstP5" text="1P5" GridPane.columnIndex="4" GridPane.rowIndex="5">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="FirstP6" text="1P6" GridPane.columnIndex="4" GridPane.rowIndex="6">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="FirstP7" text="1P7" GridPane.columnIndex="4" GridPane.rowIndex="7">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="FirstP8" text="1P8" GridPane.columnIndex="4" GridPane.rowIndex="8">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="FirstP9" text="1P9" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="9">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="FirstP10" text="1P10" GridPane.columnIndex="4" GridPane.rowIndex="10">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="SecondP2" text="2P2" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.rowIndex="2">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="SecondP3" text="2P3" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.rowIndex="3">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="SecondP4" text="2P4" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.rowIndex="4">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="SecondP5" text="2P5" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.rowIndex="5">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="SecondP6" text="2P6" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.rowIndex="6">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="SecondP7" text="2P7" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.rowIndex="7">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="SecondP8" text="2P8" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.rowIndex="8">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="SecondP9" text="2P9" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.rowIndex="9">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="SecondP10" text="2P10" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.rowIndex="10">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="ThirdP2" text="3P2" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="2">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets right="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="ThirdP3" text="3P3" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="3">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets right="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="ThirdP4" text="3P4" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="4">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets right="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="ThirdP5" text="3P5" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="5">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets right="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="ThirdP6" text="3P6" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="6">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets right="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="ThirdP7" text="3P7" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="7">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets right="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="ThirdP8" text="3P8" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="8">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets right="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="ThirdP9" text="3P9" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="9">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets right="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="ThirdP10" text="3P10" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="10">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets right="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label prefHeight="35.0" prefWidth="75.0" text="Win %" GridPane.columnIndex="5">
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+               <font>
+                  <Font name="System Italic" size="24.0" />
+               </font>
+            </Label>
+            <Label fx:id="P1WR" text="P1WR" textFill="#000000a6" GridPane.columnIndex="5" GridPane.rowIndex="1">
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+               <font>
+                  <Font size="24.0" />
+               </font>
+            </Label>
+            <Label fx:id="P2WR" text="P2WR" textFill="#000000a6" GridPane.columnIndex="5" GridPane.rowIndex="2">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="P3WR" text="P3WR" textFill="#000000a6" GridPane.columnIndex="5" GridPane.rowIndex="3">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="P4WR" text="P4WR" textFill="#000000a6" GridPane.columnIndex="5" GridPane.rowIndex="4">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="P5WR" text="P5WR" textFill="#000000a6" GridPane.columnIndex="5" GridPane.rowIndex="5">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="P6WR" text="P6WR" textFill="#000000a6" GridPane.columnIndex="5" GridPane.rowIndex="6">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="P7WR" text="P7WR" textFill="#000000a6" GridPane.columnIndex="5" GridPane.rowIndex="7">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="P8WR" text="P8WR" textFill="#000000a6" GridPane.columnIndex="5" GridPane.rowIndex="8">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="P9WR" text="P9WR" textFill="#000000a6" GridPane.columnIndex="5" GridPane.rowIndex="9">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="P10WR" text="P10WR" textFill="#000000a6" GridPane.columnIndex="5" GridPane.rowIndex="10">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label prefHeight="35.0" prefWidth="60.0" text="Score" GridPane.columnIndex="6">
+               <font>
+                  <Font name="System Italic" size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="P1SCR" text="P1SCR" textFill="#000000a6" GridPane.columnIndex="6" GridPane.rowIndex="1">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="P2SCR" text="P2SCR" textFill="#000000a6" GridPane.columnIndex="6" GridPane.rowIndex="2">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="P3SCR" text="P3SCR" textFill="#000000a6" GridPane.columnIndex="6" GridPane.rowIndex="3">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="P4SCR" text="P4SCR" textFill="#000000a6" GridPane.columnIndex="6" GridPane.rowIndex="4">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="P5SCR" text="P5SCR" textFill="#000000a6" GridPane.columnIndex="6" GridPane.rowIndex="5">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="P6SCR" text="P6SCR" textFill="#000000a6" GridPane.columnIndex="6" GridPane.rowIndex="6">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="P7SCR" text="P7SCR" textFill="#000000a6" GridPane.columnIndex="6" GridPane.rowIndex="7">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="P8SCR" text="P8SCR" textFill="#000000a6" GridPane.columnIndex="6" GridPane.rowIndex="8">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="P9SCR" text="P9SCR" textFill="#000000a6" GridPane.columnIndex="6" GridPane.rowIndex="9">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="P10SCR" text="P10SCR" textFill="#000000a6" GridPane.columnIndex="6" GridPane.rowIndex="10">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Pane fx:id="P1Arrow" maxHeight="40.0" maxWidth="40.0" prefHeight="40.0" prefWidth="40.0" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
+               <GridPane.margin>
+                  <Insets />
+               </GridPane.margin>
+            </Pane>
+            <Pane fx:id="P2Arrow" maxHeight="40.0" maxWidth="40.0" prefHeight="40.0" prefWidth="40.0" GridPane.halignment="RIGHT" GridPane.rowIndex="2" />
+            <Pane fx:id="P3Arrow" maxHeight="40.0" maxWidth="40.0" prefHeight="40.0" prefWidth="40.0" GridPane.halignment="RIGHT" GridPane.rowIndex="3" />
+            <Pane fx:id="P4Arrow" maxHeight="40.0" maxWidth="40.0" prefHeight="40.0" prefWidth="40.0" GridPane.halignment="RIGHT" GridPane.rowIndex="4" />
+            <Pane fx:id="P5Arrow" maxHeight="40.0" maxWidth="40.0" prefHeight="40.0" prefWidth="40.0" GridPane.halignment="RIGHT" GridPane.rowIndex="5" />
+            <Pane fx:id="P6Arrow" maxHeight="40.0" maxWidth="40.0" prefHeight="40.0" prefWidth="40.0" GridPane.halignment="RIGHT" GridPane.rowIndex="6" />
+            <Pane fx:id="P7Arrow" maxHeight="40.0" maxWidth="40.0" prefHeight="40.0" prefWidth="40.0" GridPane.halignment="RIGHT" GridPane.rowIndex="7" />
+            <Pane fx:id="P8Arrow" maxHeight="40.0" maxWidth="40.0" prefHeight="40.0" prefWidth="40.0" GridPane.halignment="RIGHT" GridPane.rowIndex="8" />
+            <Pane fx:id="P9Arrow" maxHeight="40.0" maxWidth="40.0" prefHeight="40.0" prefWidth="40.0" GridPane.halignment="RIGHT" GridPane.rowIndex="9" />
+            <Pane fx:id="P10Arrow" maxHeight="40.0" maxWidth="40.0" prefHeight="40.0" prefWidth="40.0" GridPane.halignment="RIGHT" GridPane.rowIndex="10" />
+            <Label prefHeight="35.0" prefWidth="85.0" text="Sponser" GridPane.columnIndex="1">
+               <font>
+                  <Font name="System Italic" size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="Sponsor1" prefHeight="35.0" prefWidth="85.0" text="Spnsr1" GridPane.columnIndex="1" GridPane.rowIndex="1">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="Sponsor2" prefHeight="35.0" prefWidth="85.0" text="Spnsr2" GridPane.columnIndex="1" GridPane.rowIndex="2">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="Sponsor3" prefHeight="35.0" prefWidth="85.0" text="Spnsr3" GridPane.columnIndex="1" GridPane.rowIndex="3">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="Sponsor4" prefHeight="35.0" prefWidth="85.0" text="Spnsr4" GridPane.columnIndex="1" GridPane.rowIndex="4">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="Sponsor5" prefHeight="35.0" prefWidth="85.0" text="Spnsr5" GridPane.columnIndex="1" GridPane.rowIndex="5">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="Sponsor6" prefHeight="35.0" prefWidth="85.0" text="Spnsr6" GridPane.columnIndex="1" GridPane.rowIndex="6">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="Sponsor7" prefHeight="35.0" prefWidth="85.0" text="Spnsr7" GridPane.columnIndex="1" GridPane.rowIndex="7">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="Sponsor8" prefHeight="35.0" prefWidth="85.0" text="Spnsr8" GridPane.columnIndex="1" GridPane.rowIndex="8">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="Sponsor9" prefHeight="35.0" prefWidth="85.0" text="Spnsr9" GridPane.columnIndex="1" GridPane.rowIndex="9">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="Sponsor10" prefHeight="35.0" prefWidth="85.0" text="Spnsr10" GridPane.columnIndex="1" GridPane.rowIndex="10">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+         </children>
+      </GridPane>
+      <Label fx:id="TitleText" layoutX="250.0" layoutY="37.0" prefHeight="103.0" prefWidth="782.0" text="WPI Smash 4 PR">
+         <font>
+            <Font name="System Bold Italic" size="70.0" />
+         </font>
+      </Label>
+      <TabPane layoutY="200.0" prefHeight="600.0" prefWidth="225.0" side="RIGHT" tabClosingPolicy="UNAVAILABLE">
+        <tabs>
+          <Tab text="Tournaments">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <Button fx:id="AddTournamentButton" layoutX="27.0" layoutY="81.0" mnemonicParsing="false" onAction="#addTournament" styleClass="a" stylesheets="@StyleSheets/ButtonStyles.css" text="Add Tournament" />
+                        <TextField fx:id="TournamentText" layoutX="20.0" layoutY="20.0" prefHeight="31.0" prefWidth="147.0" promptText="Paste JSON here" />
+                        <Label layoutX="76.0" layoutY="14.0" />
+                        <ListView fx:id="TournamentList" layoutX="8.0" layoutY="143.0" prefHeight="345.0" prefWidth="170.0" />
+                        <ComboBox fx:id="RemoveTournament" layoutX="18.0" layoutY="504.0" prefHeight="0.0" prefWidth="150.0" promptText="Remove" />
+                        <Button layoutX="14.0" layoutY="547.0" mnemonicParsing="false" onAction="#removeTournament" text="Remove Tournament" />
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+          <Tab text="Seasons">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <ComboBox fx:id="ChangeSeason" layoutX="11.0" layoutY="24.0" prefHeight="31.0" prefWidth="157.0" promptText="Change Season" />
+                        <Button fx:id="AddSeasonButton" layoutX="40.0" layoutY="543.0" mnemonicParsing="false" onAction="#createSeason" text="Add Season" />
+                        <TextField fx:id="newSeasonTitle" layoutX="23.0" layoutY="497.0" prefHeight="31.0" prefWidth="133.0" promptText="New Season Title" />
+                        <Button layoutX="32.0" layoutY="78.0" mnemonicParsing="false" onAction="#changeSeason" text="Change Season" />
+                        <Button layoutX="21.0" layoutY="332.0" mnemonicParsing="false" onAction="#recalculateSeason" text="Recalculate Season" />
+                        <ComboBox fx:id="BasePlayer" layoutX="18.0" layoutY="168.0" prefWidth="150.0" promptText="Base Player" />
+                        <ComboBox fx:id="MergePlayer" layoutX="18.0" layoutY="219.0" prefHeight="31.0" prefWidth="150.0" promptText="Merge Player" />
+                        <Button layoutX="28.0" layoutY="269.0" mnemonicParsing="false" onAction="#combinePlayers" text="Combine Players" />
+                        <ComboBox fx:id="DeleteSeason" disable="true" layoutX="18.0" layoutY="396.0" prefWidth="150.0" promptText="Delete Season" />
+                        <Button disable="true" layoutX="33.0" layoutY="443.0" mnemonicParsing="false" onAction="#deleteSeason" text="Delete Season" />
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+            <Tab text="Games">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <ComboBox fx:id="ChangeGame" layoutX="18.0" layoutY="22.0" prefWidth="150.0" promptText="Change Game" />
+                        <Button layoutX="48.0" layoutY="189.0" mnemonicParsing="false" onAction="#addGame" text="Add Game" />
+                        <TextField fx:id="GameTitle" layoutX="15.0" layoutY="136.0" prefHeight="31.0" prefWidth="156.0" promptText="Game Title" />
+                        <Button layoutX="37.0" layoutY="79.0" mnemonicParsing="false" onAction="#changeGame" text="Change Game" />
+                     </children>
+                  </AnchorPane>
+              </content>
+            </Tab>
+            <Tab text="Player">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <ComboBox fx:id="SelectPlayer" layoutX="18.0" layoutY="24.0" onAction="#fillCharacterBoxes" prefWidth="150.0" promptText="Select Player" />
+                        <ComboBox fx:id="FirstCharacter" layoutX="9.0" layoutY="102.0" prefWidth="170.0" promptText="First Character" />
+                        <ComboBox fx:id="SecondCharacter" layoutX="9.0" layoutY="158.0" prefHeight="31.0" prefWidth="170.0" promptText="Second Character" />
+                        <ComboBox fx:id="ThirdCharacter" layoutX="8.0" layoutY="212.0" prefHeight="31.0" prefWidth="170.0" promptText="Third Character" />
+                        <Button layoutX="45.0" layoutY="412.0" mnemonicParsing="false" onAction="#alterPlayer" text="Alter Player" />
+                        <TextField fx:id="NewPlayerTag" layoutX="17.0" layoutY="485.0" prefHeight="31.0" prefWidth="150.0" promptText="New Player Tag" />
+                        <Button layoutX="22.0" layoutY="536.0" mnemonicParsing="false" onAction="#addPlayer" text="Create New Player" />
+                        <TextField fx:id="PlayerScore" editable="false" layoutX="9.0" layoutY="269.0" prefHeight="31.0" prefWidth="170.0" promptText="Player Score" />
+                        <TextField fx:id="InitialScore" layoutX="9.0" layoutY="324.0" prefHeight="31.0" prefWidth="170.0" promptText="Initial Score" />
+                     </children>
+                  </AnchorPane>
+              </content>
+            </Tab>
+            <Tab text="Settings">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TextField fx:id="ChangeTitle" layoutX="13.0" layoutY="14.0" prefHeight="31.0" prefWidth="160.0" promptText="Change Title" />
+                        <ComboBox fx:id="DefaultSeasonBox" layoutX="14.0" layoutY="69.0" prefHeight="31.0" prefWidth="159.0" promptText="Default Season" />
+                        <Button layoutX="34.0" layoutY="524.0" mnemonicParsing="false" onAction="#alterSettings" text="Save Changes" />
+                        <ComboBox fx:id="DefaultGameBox" layoutX="19.0" layoutY="122.0" onAction="#defaultGameSettings" prefWidth="150.0" promptText="Default Game" />
+                        <TextField fx:id="KvalueSetting" layoutX="27.0" layoutY="168.0" prefHeight="31.0" prefWidth="133.0" promptText="New K Value" />
+                     </children>
+                  </AnchorPane>
+              </content>
+            </Tab>
+            <Tab text="Full PR">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TextArea fx:id="FullPRText" layoutX="8.0" layoutY="42.0" prefHeight="546.0" prefWidth="171.0" />
+                        <Label layoutX="71.0" layoutY="14.0" text="Full PR" />
+                     </children>
+                  </AnchorPane>
+              </content>
+            </Tab>
+            <Tab text="Methods">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <JFXCheckBox fx:id="PlacementMethod" layoutX="23.0" layoutY="35.0" text="Placement" />
+                        <JFXCheckBox fx:id="EloMethod" layoutX="23.0" layoutY="71.0" text="Elo" />
+                        <JFXCheckBox fx:id="PlacingBonusMethod" layoutX="21.0" layoutY="109.0" text="Placing Bonus" />
+                        <JFXCheckBox fx:id="ScheduleStrengthMethod" layoutX="21.0" layoutY="141.0" text="Schedule Strength" />
+                     </children>
+                  </AnchorPane>
+              </content>
+            </Tab>
+        </tabs>
+      </TabPane>
+      <Label layoutX="1168.0" layoutY="37.0" text="Current Season:">
+         <font>
+            <Font name="System Italic" size="15.0" />
+         </font></Label>
+      <Label layoutX="1172.0" layoutY="78.0" text="Current Game:">
+         <font>
+            <Font name="System Italic" size="15.0" />
+         </font></Label>
+      <Label fx:id="CurrentSeason" layoutX="1295.0" layoutY="37.0" text="Season">
+         <font>
+            <Font name="System Italic" size="15.0" />
+         </font></Label>
+      <Label fx:id="CurrentGame" layoutX="1300.0" layoutY="78.0" text="Game">
+         <font>
+            <Font name="System Italic" size="15.0" />
+         </font></Label>
+      <Label layoutX="1258.0" layoutY="161.0" text="Player Statistics">
+         <font>
+            <Font size="24.0" />
+         </font>
+      </Label>
+      <ComboBox fx:id="SelectPlayerStatistics" layoutX="1268.0" layoutY="206.0" onAction="#updatePlayerStatistics" prefWidth="150.0" promptText="Select Player" />
+      <ListView fx:id="SetList" layoutX="1239.0" layoutY="263.0" prefHeight="257.0" prefWidth="200.0" />
+      <Label fx:id="WinLoss" alignment="CENTER" layoutX="1258.0" layoutY="533.0" prefHeight="27.0" prefWidth="163.0" text="Wins vs Losses">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <Label fx:id="WinPercentage" alignment="CENTER" layoutX="1258.0" layoutY="560.0" prefHeight="27.0" prefWidth="163.0" text="Win Percentage">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <Button layoutX="226.0" layoutY="835.0" mnemonicParsing="false" onAction="#update" prefHeight="35.0" prefWidth="48.0" text="↻">
+         <font>
+            <Font name="System Bold" size="24.0" />
+         </font>
+      </Button>
+      <Label fx:id="TourneysEntered" alignment="CENTER" layoutX="1236.0" layoutY="587.0" prefHeight="27.0" prefWidth="207.0" text="Tourneys Entered">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <Button layoutX="1322.0" layoutY="769.0" mnemonicParsing="false" onAction="#openTutorial" prefHeight="35.0" prefWidth="61.0" text="i">
+         <font>
+            <Font name="Bell MT Italic" size="33.0" />
+         </font>
+      </Button>
+      <Label fx:id="CurrentRank" alignment="CENTER" layoutX="1268.0" layoutY="614.0" prefHeight="27.0" prefWidth="150.0" text="Current Rank" textAlignment="CENTER">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <JFXDrawer layoutX="-280.0" layoutY="170.0" prefHeight="660.0" prefWidth="270.0">
+         <children>
+            <Circle fill="DODGERBLUE" radius="100.0" stroke="BLACK" strokeType="INSIDE" />
+         </children>
+      </JFXDrawer>
+      <Button layoutX="1296.0" layoutY="717.0" mnemonicParsing="false" onAction="#save" text="Save Changes" />
+      <Button layoutX="1293.0" layoutY="845.0" mnemonicParsing="false" onAction="#resetChanges" text="Reset Changes" />
+   </children>
+</AnchorPane>

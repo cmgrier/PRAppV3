@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="665.0" prefWidth="1085.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="TutorialController">
+   <children>
+      <TextArea fx:id="Text" editable="false" layoutX="56.0" layoutY="111.0" prefHeight="491.0" prefWidth="427.0" text="Other Features:&#10;Player Merging: &#10;    If you would like to combine two players together (different tag or misspelling), head to the Season tab and select the base player (the player that will remain after the combination, select the player to be merged, and then select the combine players button.  After selecting the update button, all changes should be represented on the top 10 if relevant.&#10;&#10;Changing Games:&#10;    To change to a different game (and a different list of seasons), head to the Game tab and select the game you would like to change to and select the change game button.  The Current Season will be the first season in the list.  To add a game, follow similar directions to adding a season, but in the Game tab." wrapText="true">
+         <font>
+            <Font size="16.0" />
+         </font>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets></TextArea>
+      <ImageView fx:id="TopRightImage" fitHeight="240.0" fitWidth="370.0" layoutX="667.0" layoutY="128.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="BottomRightImage" fitHeight="240.0" fitWidth="370.0" layoutX="667.0" layoutY="374.0" pickOnBounds="true" preserveRatio="true" />
+      <Label fx:id="Title" alignment="CENTER" contentDisplay="CENTER" layoutX="350.0" layoutY="7.0" prefHeight="83.0" prefWidth="385.0" text="Tutorial" textAlignment="CENTER">
+         <font>
+            <Font size="40.0" />
+         </font>
+      </Label>
+      <Button layoutX="475.0" layoutY="610.0" mnemonicParsing="false" onAction="#PGDown" text="&lt;" />
+      <Button layoutX="581.0" layoutY="610.0" mnemonicParsing="false" onAction="#PGUp" text="&gt;" />
+      <Label fx:id="PageNumber" alignment="CENTER" layoutX="523.0" layoutY="610.0" prefHeight="21.0" prefWidth="39.0" text="#" textAlignment="CENTER">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Label>
+      <Label layoutX="545.0" layoutY="620.0" text="/5" />
+      <Label fx:id="SectionTitle" layoutX="56.0" layoutY="70.0" prefHeight="40.0" prefWidth="427.0" text="Section Title" />
+      <ImageView fx:id="CenterImage" fitHeight="512.0" fitWidth="370.0" layoutX="662.0" layoutY="90.0" pickOnBounds="true" preserveRatio="true" />
+   </children>
+</AnchorPane>
