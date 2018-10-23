@@ -263,6 +263,7 @@ public class StartScreenController implements Initializable{
         SetList.setVisible(false);
         fillGameBox();
         DefaultSeasonBox.setDisable(true);
+        fillFullPR();
     }
 
     private void setFont(Font font){
