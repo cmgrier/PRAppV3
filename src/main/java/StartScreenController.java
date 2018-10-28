@@ -1822,14 +1822,11 @@ public class StartScreenController implements Initializable{
 
     // Todo needs to be added for V3
     public void combinePlayers(){
-//        String basePlayer = BasePlayer.getValue();
-//        String mergePlayer = MergePlayer.getValue();
-//        Season s = getSeason(CurrentGame.getText(), CurrentSeason.getText());
-//        s.combinePlayers(CurrentGame.getText(),basePlayer,mergePlayer);
-//
-//        updateTopTen();
-//        updateCharactersAndPlacings();
-//        fillPlayerBox();
+        String basePlayer = BasePlayer.getValue();
+        String mergePlayer = MergePlayer.getValue();
+        Database DB = new Database();
+        int seasonID = DB.getSeasonID(CurrentSeason.getText(), CurrentGame.getText());
+        DB.combinePlayers(basePlayer, mergePlayer, seasonID);
     }
 
 //    public void updateWinRates(){

@@ -1122,4 +1122,48 @@ public class Database {
         }
         return scores;
     }
+
+    public void combinePlayers(String basePlayerTag, String mergePlayerTag, int seasonID){
+        int basePlayerID = 0;
+        int mergePlayerID = 0;
+        try{
+            ResultSet basePlayer = getPlayer2(basePlayerTag, seasonID);
+            if(basePlayer.next()){
+                basePlayerID = basePlayer.getInt("playerID");
+            }
+            basePlayer.close();
+            ResultSet mergePlayer = getPlayer2(mergePlayerTag, seasonID);
+            if(mergePlayer.next()){
+                mergePlayerID = mergePlayer.getInt("playerID");
+            }
+            mergePlayer.close();
+        } catch (SQLException sqle){
+            System.out.println("Couldn't get Players " + basePlayerTag + " or " + mergePlayerTag);
+            sqle.printStackTrace();
+        }
+        try {
+            Connection connection = getDBConnection();
+            Statement stmt = connection.createStatement();
+            String str = "Update Matches set player1ID = " + basePlayerID + "where player1ID = " + mergePlayerID;
+            stmt.executeUpdate(str);
+            str = "Update Matches set player2ID = " + basePlayerID + "where player2ID = " + mergePlayerID;
+            stmt.executeUpdate(str);
+            stmt.close();
+            connection.close();
+        } catch (SQLException sqle){
+            System.out.println("Couldn't update Matches to merge players " + mergePlayerID + " to " + basePlayerID);
+            sqle.printStackTrace();
+        }
+        try {
+            Connection connection = getDBConnection();
+            Statement stmt = connection.createStatement();
+            String str = "Update Placings set playerID = " + basePlayerID + " where playerID = " + mergePlayerID;
+            stmt.executeUpdate(str);
+            stmt.close();
+            connection.close();
+        } catch (SQLException sqle){
+            System.out.println("Couldn't update Placings to merge players " + mergePlayerID + " to " + basePlayerID);
+            sqle.printStackTrace();
+        }
+    }
 }

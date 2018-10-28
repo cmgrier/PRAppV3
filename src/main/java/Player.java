@@ -12,7 +12,7 @@ public class Player {
     int tournamentsEntered;
     int seasonID;
 
-    double K = 40;
+    double K = 26;
     double SoSK = 10;
 
     public Player(int playerID, String tag, String sponsor, int score, int initialScore, String characters, int tournamentsEntered, int seasonID){
